@@ -2,6 +2,10 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "type": "shell",
+            "label": "Run.sh",
+            "command": "${workspaceFolder}/run.sh"
+        },{
             "type": "cppbuild",
             "label": "G++-11",
             "command": "/usr/bin/g++-11",
