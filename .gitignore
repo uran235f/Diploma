@@ -1,0 +1,5 @@
+# include everything
+!/*
+
+# exclusions
+/build

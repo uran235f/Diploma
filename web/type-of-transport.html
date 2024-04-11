@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zalupa</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <div class="button-container">
+        <div class="button-container-2">
+            <a onclick="setType('Автомобіль'); sendRequest();">
+                <button class="button">Автомобіль</button>
+            </a>
+        </div>
+        <div class="button-container-2">
+            <a onclick="setType('Громадський транспорт'); sendRequest();">
+                <button class="button">Громадський транспорт</button>
+            </a>
+        </div>
+        <div class="button-container-2">
+            <a onclick="setType('Пішки'); sendRequest();">
+                <button class="button">Пішки</button>
+            </a>
+        </div>
+        <div class="button-container-2">
+            <a href="index.html"><button class="button button-2">Повернутись</button></a>
+        </div>
+    </div>
+    <script src="client.js"></script>
+    <script>
+        // Функція для збереження типу транспорту в локальному сховищі
+        function setType(type) {
+            localStorage.setItem('transportType', type);
+        }
+    </script>
+</body>
+
+</html>

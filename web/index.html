@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zalupa</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <div class="button-container">
+        <div class="button-container-2">
+            <a onclick="setType('Аптека');" href="type-of-transport.html">
+                <button class="button">Аптека</button>
+            </a>
+            <a onclick="setType('Невідкладна допомога');" href="type-of-transport.html">
+                <button class="button">Невідкладна допомога</button>
+            </a>
+        </div>
+        <div class="button-container-2">
+            <a onclick="setType('Госпіталь');" href="type-of-transport.html">
+                <button class="button">Госпіталь</button>
+            </a>
+            <a onclick="setType('Травмпункт');" href="type-of-transport.html">
+                <button class="button">Травмпункт</button>
+            </a>
+        </div>
+        <div class="button-container-2">
+            <a onclick="setType('Поліклініка');" href="type-of-transport.html">
+                <button class="button">Поліклініка</button>
+            </a>
+            <a onclick="setType('Стоматологія');" href="type-of-transport.html">
+                <button class="button">Стоматологія</button>
+            </a>
+        </div>
+        <div class="button-container-2">
+            <a onclick="setType('Гінекологія');" href="type-of-transport.html">
+                <button class="button">Гінекологія</button>
+            </a>
+            <a onclick="setType('Урологія');" href="type-of-transport.html">
+                <button class="button">Урологія</button>
+            </a>
+        </div>
+        <div class="button-container-2">
+            <a onclick="setType('Пологовий будинок');" href="type-of-transport.html">
+                <button class="button">Пологовий будинок</button>
+            </a>
+            <a onclick="setType('Інше');" href="type-of-transport.html">
+                <button class="button">Інше</button>
+            </a>
+        </div>
+    </div>
+    <script src="client.js"></script>
+    <script>
+        // Функція для збереження типу закладу в локальному сховищі
+        function setType(type) {
+            localStorage.setItem('facilityType', type);
+        }
+    </script>
+</body>
+
+</html>
