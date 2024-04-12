@@ -1,10 +1,11 @@
 #include "Graph.hpp"
 #include "Node.hpp"
-#include <iostream>
+#include "Request.hpp"
 
 #include <boost/asio.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
+#include <iostream>
 
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -17,6 +18,8 @@ int main() {
 
   // Створення TCP-слухача на порту 8080
   tcp::acceptor acceptor{ioc, {{}, 8080}};
+  std::cout << "Server is ready" << std::endl;
+
   while (true) {
     // Очікування та обробка вхідного з'єднання
     tcp::socket socket{ioc};
@@ -29,9 +32,9 @@ int main() {
 
     // Отримання параметра з запиту
     std::string data = request.body();
-
-    // Виведення імені кнопки у консоль браузера
-    std::cout << "Pressed button: " << data << std::endl;
+    if (!data.empty()) {
+      std::cout << Request::fromJsonString(data);
+    }
 
     // Створення відповіді сервера
     http::response<http::string_body> response{http::status::ok,
@@ -46,7 +49,7 @@ int main() {
 
     auto a = 2 + 2;
 
-    response.body() = "Received data " + std::to_string(a) + " " + data;
+    response.body() = "Received data " + data;
     response.prepare_payload();
 
     // Відправлення відповіді клієнту

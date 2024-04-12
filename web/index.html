@@ -58,6 +58,27 @@
         function setType(type) {
             localStorage.setItem('facilityType', type);
         }
+        // Перевіряємо, чи браузер підтримує геолокацію
+        if (navigator.geolocation) {
+            // Викликаємо метод getCurrentPosition для отримання поточних координат
+            navigator.geolocation.getCurrentPosition(function(position) {
+                // position - об'єкт з координатами користувача
+                const latitude = position.coords.latitude; // Широта
+                const longitude = position.coords.longitude; // Довгота
+                localStorage.setItem('latitude', latitude)
+                localStorage.setItem('longitude', longitude)
+
+                // Тепер ви можете використовувати ці координати
+                console.log('Latitude:', latitude);
+                console.log('Longitude:', longitude);
+            }, function(error) {
+                // Обробляємо помилки, якщо вони виникли під час отримання координат
+                console.error('Error getting location:', error);
+            });
+        } else {
+            // Якщо геолокація не підтримується браузером
+            console.error('Geolocation is not supported by this browser.');
+        }
     </script>
 </body>
 

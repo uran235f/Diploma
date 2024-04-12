@@ -2,10 +2,14 @@ function sendRequest() {
 
     const url = 'http://localhost:8080';
 
+    let latitude = localStorage.getItem('latitude');
+    let longitude = localStorage.getItem('longitude');
     let facilityType = localStorage.getItem('facilityType');
     let transportType = localStorage.getItem('transportType');
 
     let data = {
+        latitude: latitude,
+        longitude: longitude,
         medicalFacility: facilityType,
         routeType: transportType
     };

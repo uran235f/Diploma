@@ -1,1 +1,1 @@
-target_sources(${PROJECT_NAME} PUBLIC Graph.cpp)
+target_sources(${PROJECT_NAME} PUBLIC Graph.cpp Request.cpp)
