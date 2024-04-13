@@ -1,6 +1,7 @@
 #include "Graph.hpp"
 #include "Node.hpp"
 #include "Request.hpp"
+#include "DataLoader.hpp"
 
 #include <boost/asio.hpp>
 #include <boost/beast/core.hpp>
@@ -13,6 +14,13 @@ namespace net = boost::asio;
 using tcp = net::ip::tcp;
 
 int main() {
+    Graph graph;
+    auto loader = DataLoader();
+    loader.loadNodes(graph);
+    std::cout<<"Nodes"<<std::endl;
+    graph.showNodes();
+
+
   // Запуск інтерфейсу вводу-виводу boost::asio
   net::io_context ioc{1};
 
@@ -24,6 +32,10 @@ int main() {
     // Очікування та обробка вхідного з'єднання
     tcp::socket socket{ioc};
     acceptor.accept(socket);
+
+
+
+
 
     // Отримання запиту від клієнта
     beast::flat_buffer buffer;
