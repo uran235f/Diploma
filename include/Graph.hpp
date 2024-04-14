@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Arc.hpp"
 #include "Node.hpp"
-#include <vector>
 #include <iostream>
+#include <vector>
 
 class Graph {
 public:
@@ -10,12 +11,12 @@ public:
   ~Graph(){};
 
   void addNode(Node const &node);
-  void showNodes() const {
-    for (auto const &n : nodes_) {
-      std::cout << n.node() << std::endl;
-    }
-  }
+  void addArc(Arc const &arc);
+
+  std::vector<Node> &nodes() { return nodes_; }
+  std::vector<Arc> &arcs() { return arcs_; }
 
 private:
   std::vector<Node> nodes_;
+  std::vector<Arc> arcs_;
 };
