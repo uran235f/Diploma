@@ -1,1 +1,1 @@
-target_sources(${PROJECT_NAME} PUBLIC Graph.cpp Request.cpp DataLoader.cpp)
+target_sources(${PROJECT_NAME} PUBLIC Graph.cpp Request.cpp DataLoader.cpp Dijkstra.cpp)

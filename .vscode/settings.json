@@ -1,6 +1,7 @@
 {
     "clang-format.executable": "/usr/lib/llvm-15/bin/clang-format",
     "files.associations": {
+        "*.py": "python",
         "*.embeddedhtml": "html",
         "*.java": "java",
         "cctype": "cpp",
@@ -74,6 +75,10 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "valarray": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "fstream": "cpp",
+        "ranges": "cpp",
+        "span": "cpp",
+        "*.ipp": "cpp"
     }
 }

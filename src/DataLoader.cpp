@@ -22,6 +22,8 @@ void DataLoader::loadNodes(Graph &graph) {
                        row["longitude"].as<double>(), std::move(name),
                        std::move(address), std::move(facilities)});
   }
+
+  std::cout << "Nodes loaded." << std::endl;
 }
 
 void DataLoader::loadArcs(Graph &graph) {
@@ -46,4 +48,6 @@ void DataLoader::loadArcs(Graph &graph) {
                      row["distance"].as<double>(), std::move(name),
                      std::move(types)});
   }
+  
+    std::cout << "Arcs loaded." << std::endl;
 }

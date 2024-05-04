@@ -1,4 +1,5 @@
 #include "DataLoader.hpp"
+#include "Dijkstra.hpp"
 #include "Graph.hpp"
 #include "Node.hpp"
 #include "Request.hpp"
@@ -15,9 +16,9 @@ using tcp = net::ip::tcp;
 
 int main() {
   Graph graph;
-  auto loader = DataLoader();
-  loader.loadNodes(graph);
-  loader.loadArcs(graph);
+  auto loader = std::make_unique<DataLoader>();
+  loader->loadNodes(graph);
+  loader->loadArcs(graph);
   std::cout << "Nodes size=" << graph.nodes().size() << std::endl;
   std::cout << graph.nodes()[0] << std::endl;
   std::cout << "Arcs size=" << graph.arcs().size() << std::endl;
@@ -34,6 +35,8 @@ int main() {
   } else {
     std::cout << "No node 0" << std::endl;
   }
+
+  auto result_json = Dijkstra::optimize(graph);
 
   // Запуск інтерфейсу вводу-виводу boost::asio
   net::io_context ioc{1};

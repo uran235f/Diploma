@@ -14,6 +14,12 @@ public:
         txn_(conn_) {
     std::cout << "DataLoader initialized" << std::endl;
   }
+
+  DataLoader(DataLoader const &) = delete;
+  DataLoader(DataLoader &&) = delete;
+  DataLoader &operator=(DataLoader const &) = delete;
+  DataLoader &operator=(DataLoader &&) = delete;
+
   //   DataLoader(const std::string &dbname, const std::string &user,
   //              const std::string &password, const std::string &host,
   //              const std::string &port)

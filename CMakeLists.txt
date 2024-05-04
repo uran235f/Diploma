@@ -1,14 +1,16 @@
 cmake_minimum_required(VERSION 3.22)
 project(optimizer)
-list(APPEND CMAKE_PREFIX_PATH "/usr/local/lib/cmake/libpqxx")
+list(APPEND CMAKE_PREFIX_PATH "/usr/share/doc/libpqxx")
 
 set(CXX_STANDARD_REQUIRED 17)
 set(CXX_STANDARD_REQUIRED TRUE)
+set(CMAKE_CXX_STANDARD 17)
+
+message("Compiler: ${CMAKE_C_COMPILER}")
+message("Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")
 
 find_package(Boost REQUIRED)
 find_package(nlohmann_json REQUIRED)
-#find_package(libpqxx REQUIRED)
-
 find_library(PQXX_LIB pqxx)
 
 add_executable(${PROJECT_NAME} main.cpp)

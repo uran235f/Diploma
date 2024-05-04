@@ -33,6 +33,7 @@ public:
 
   std::size_t from() const { return from_node_; }
   std::size_t to() const { return to_node_; }
+  double distance() const { return distance_; }
 
 private:
   std::size_t id_;

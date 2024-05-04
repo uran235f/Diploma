@@ -4,6 +4,7 @@
 #include "Node.hpp"
 #include <iostream>
 #include <map>
+#include <optional>
 #include <vector>
 
 using arcId = std::size_t;
@@ -18,11 +19,14 @@ public:
   void addNode(Node const &node);
   void addArc(Arc const &arc);
 
-  std::vector<Node> &nodes() { return nodes_; }
-  std::vector<Arc> &arcs() { return arcs_; }
-  std::map<nodeId, Arcs> const &graph() { return adjacency_list_; }
+  std::vector<Node> const &nodes() const { return nodes_; }
+  std::vector<Arc> const &arcs() const { return arcs_; }
+  Node const &node(nodeId id) const { return nodes_[id]; }
+  Arc const &arc(arcId id) const { return arcs_[id]; }
+  std::map<nodeId, Arcs> const &graph() const { return adjacency_list_; }
 
-  void build_master_graph();
+  void build_master_graph() noexcept;
+  std::optional<Arcs> operator[](nodeId id) const noexcept;
 
 private:
   std::map<nodeId, Arcs> adjacency_list_;
