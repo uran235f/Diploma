@@ -31,6 +31,9 @@ public:
     return os << oss.str();
   }
 
+  std::size_t from() const { return from_node_; }
+  std::size_t to() const { return to_node_; }
+
 private:
   std::size_t id_;
   std::size_t from_node_;
