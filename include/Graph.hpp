@@ -19,17 +19,17 @@ public:
   void addNode(Node const &node);
   void addArc(Arc const &arc);
 
-  std::vector<Node> const &nodes() const { return nodes_; }
-  std::vector<Arc> const &arcs() const { return arcs_; }
-  Node const &node(nodeId id) const { return nodes_[id]; }
-  Arc const &arc(arcId id) const { return arcs_[id]; }
   std::map<nodeId, Arcs> const &graph() const { return adjacency_list_; }
+  std::map<nodeId, Node> const &nodes() const { return nodes_; }
+  std::map<arcId, Arc> const &arcs() const { return arcs_; }
+  Node const &node(nodeId id) const;
+  Arc const &arc(arcId id) const;
 
   void build_master_graph() noexcept;
   std::optional<Arcs> operator[](nodeId id) const noexcept;
 
 private:
   std::map<nodeId, Arcs> adjacency_list_;
-  std::vector<Node> nodes_;
-  std::vector<Arc> arcs_;
+  std::map<nodeId, Node> nodes_;
+  std::map<arcId, Arc> arcs_;
 };

@@ -13,13 +13,15 @@ std::string Dijkstra::optimize(Graph const &g) {
 
   queue.push(start);
 
+  for (auto const &[arc_id, arc] : g.arcs()) {
+    std::cout << "[DEBUG] arc=" << arc_id << " arc_dist=" << arc.distance()
+              << std::endl;
+  }
 
-    auto a3 = g.arc(3);
-    std::cout << "arc=" << a3.arc() << " arc_dist=" << a3.distance()
-              << std::endl;
-    auto a4 = g.arc(4);
-    std::cout << "arc=" << a4.arc() << " arc_dist=" << a4.distance()
-              << std::endl;
+  for (auto const &[node_id, node] : g.nodes()) {
+    std::cout << "[DEBUG] arc=" << node_id << std::endl;
+  }
+
   std::cout << "Dijkstra optimization configured." << std::endl;
 
   while (!queue.empty()) {

@@ -20,9 +20,9 @@ int main() {
   loader->loadNodes(graph);
   loader->loadArcs(graph);
   std::cout << "Nodes size=" << graph.nodes().size() << std::endl;
-  std::cout << graph.nodes()[0] << std::endl;
+  std::cout << graph.nodes().at(0) << std::endl;
   std::cout << "Arcs size=" << graph.arcs().size() << std::endl;
-  std::cout << graph.arcs()[0] << std::endl;
+  std::cout << graph.arcs().at(0) << std::endl;
   graph.build_master_graph();
 
   auto it = graph.graph().find(0);
@@ -30,7 +30,7 @@ int main() {
     std::cout << "Arcs in node 0 - " << it->second.size() << std::endl;
     for (auto const &arc : it->second) {
       std::cout << "Arcid " << arc << std::endl;
-      std::cout << "from node 0 -> " << graph.arcs()[arc] << std::endl;
+      std::cout << "from node 0 -> " << graph.arcs().at(arc) << std::endl;
     }
   } else {
     std::cout << "No node 0" << std::endl;
