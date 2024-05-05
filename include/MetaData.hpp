@@ -55,6 +55,12 @@ public:
     return os << oss.str();
   }
 
+  double lat() const { return lat_; }
+  double lon() const { return lon_; }
+  std::string const &name() const { return name_; }
+  std::string const &address() const { return address_; }
+  std::set<Facility> const &facilities() const { return facilities_; }
+
 private:
   double lat_;
   double lon_;

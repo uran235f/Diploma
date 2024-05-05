@@ -37,6 +37,7 @@ int main() {
   }
 
   auto result_json = Dijkstra::optimize(graph);
+  std::cout << result_json << std::endl;
 
   // Запуск інтерфейсу вводу-виводу boost::asio
   net::io_context ioc{1};
