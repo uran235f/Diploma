@@ -16,6 +16,15 @@ struct Item {
     return this->distance > rhs.distance;
   }
 
+  bool operator<(Item const &rhs) const {
+    return this->distance < rhs.distance;
+  }
+
+  bool operator==(Item const &rhs) const {
+    return this->node_id == rhs.node_id && this->parent_arc.value() &&
+           rhs.parent_arc.value();
+  }
+
   friend std::ostream &operator<<(std::ostream &os, Item const &item) {
     std::ostringstream oss;
     oss << "Item: node " << item.node_id;

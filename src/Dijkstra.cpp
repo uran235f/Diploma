@@ -1,11 +1,12 @@
 #include "Dijkstra.hpp"
+#include "Heap.hpp"
+
 #include <map>
 #include <nlohmann/json.hpp>
-#include <queue>
 
 std::string Dijkstra::optimize(Graph const &g, std::size_t from,
                                std::size_t to) {
-  std::priority_queue<Item, std::vector<Item>, std::greater<Item>> queue;
+  Heap<Item> queue;
   std::map<size_t, Item> visited;
 
   std::size_t destination_node = to;
@@ -29,7 +30,7 @@ std::string Dijkstra::optimize(Graph const &g, std::size_t from,
     if (!arcs.has_value()) {
       continue;
     }
-    
+
     for (auto arc_id : arcs.value()) {
       auto const &arc = g.arc(arc_id);
 
@@ -54,29 +55,22 @@ std::string Dijkstra::optimize(Graph const &g, std::size_t from,
         visited[arc.to()] = new_item;
         queue.push(new_item);
       } else {
+
         auto new_dist = arc.distance() + item.distance;
 
-        if (new_dist == it->second.distance) {
-          // Item new_item =
-          //     Item{arc.to(), arc_id, std::make_shared<Item>(item), new_dist};
-          // std::cout << "[COLLOCATION] to_id=" << arc.to()
-          //           << " via arc=" << arc_id << " cost=" << new_item.distance
-          //           << std::endl;
-          // std::cout << "with: to_id=" << it->second.node_id
-          //           << " via arc=" << *it->second.parent_arc
-          //           << " cost=" << it->second.distance << std::endl;
+        if (new_dist < it->second.distance) {
 
-          // std::cout << "[ITEM] " << item << std::endl;
-          // std::cout << "[ITEM] " << new_item << std::endl;
+          auto to_update = queue.find(it->second);
+          to_update->distance = new_dist;
+          to_update->parent = std::make_shared<Item>(item);
+          to_update->parent_arc = arc_id;
 
-          // queue.push(new_item);
-        } else if (new_dist < it->second.distance) {
           it->second.distance = new_dist;
           it->second.parent = std::make_shared<Item>(item);
           it->second.parent_arc = arc_id;
+
           std::cout << "[UPDATE] to_id=" << arc.to() << " via arc=" << arc_id
                     << " cost=" << it->second.distance << std::endl;
-
           std::cout << "[ITEM] " << item << std::endl;
 
         } else {
