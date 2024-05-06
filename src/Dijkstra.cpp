@@ -3,12 +3,13 @@
 #include <nlohmann/json.hpp>
 #include <queue>
 
-std::string Dijkstra::optimize(Graph const &g) {
+std::string Dijkstra::optimize(Graph const &g, std::size_t from,
+                               std::size_t to) {
   std::priority_queue<Item, std::vector<Item>, std::greater<Item>> queue;
   std::map<size_t, Item> visited;
 
-  auto destination_node = 8;
-  std::size_t start_node = 0;
+  std::size_t destination_node = to;
+  std::size_t start_node = from;
   auto start = Item{start_node, std::nullopt, nullptr, 0};
 
   bool reached_dest = false;
@@ -25,6 +26,10 @@ std::string Dijkstra::optimize(Graph const &g) {
     std::cout << "[WORKING] node_id=" << item.node_id << std::endl;
     auto arcs = g[item.node_id];
 
+    if (!arcs.has_value()) {
+      continue;
+    }
+    
     for (auto arc_id : arcs.value()) {
       auto const &arc = g.arc(arc_id);
 
@@ -52,19 +57,19 @@ std::string Dijkstra::optimize(Graph const &g) {
         auto new_dist = arc.distance() + item.distance;
 
         if (new_dist == it->second.distance) {
-          Item new_item =
-              Item{arc.to(), arc_id, std::make_shared<Item>(item), new_dist};
-          std::cout << "[COLLOCATION] to_id=" << arc.to()
-                    << " via arc=" << arc_id << " cost=" << new_item.distance
-                    << std::endl;
-          std::cout << "with: to_id=" << it->second.node_id
-                    << " via arc=" << *it->second.parent_arc
-                    << " cost=" << it->second.distance << std::endl;
+          // Item new_item =
+          //     Item{arc.to(), arc_id, std::make_shared<Item>(item), new_dist};
+          // std::cout << "[COLLOCATION] to_id=" << arc.to()
+          //           << " via arc=" << arc_id << " cost=" << new_item.distance
+          //           << std::endl;
+          // std::cout << "with: to_id=" << it->second.node_id
+          //           << " via arc=" << *it->second.parent_arc
+          //           << " cost=" << it->second.distance << std::endl;
 
-          std::cout << "[ITEM] " << item << std::endl;
-          std::cout << "[ITEM] " << new_item << std::endl;
+          // std::cout << "[ITEM] " << item << std::endl;
+          // std::cout << "[ITEM] " << new_item << std::endl;
 
-          queue.push(new_item);
+          // queue.push(new_item);
         } else if (new_dist < it->second.distance) {
           it->second.distance = new_dist;
           it->second.parent = std::make_shared<Item>(item);

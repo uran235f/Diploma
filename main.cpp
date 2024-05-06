@@ -19,13 +19,10 @@ int main() {
   auto loader = std::make_unique<DataLoader>();
   loader->loadNodes(graph);
   loader->loadArcs(graph);
-  std::cout << "Nodes size=" << graph.nodes().size() << std::endl;
-  std::cout << graph.nodes().at(0) << std::endl;
-  std::cout << "Arcs size=" << graph.arcs().size() << std::endl;
-  std::cout << graph.arcs().at(0) << std::endl;
+
   graph.build_master_graph();
 
-  auto it = graph.graph().find(0);
+  auto it = graph.graph().find(26201725);
   if (it != graph.graph().end()) {
     std::cout << "Arcs in node 0 - " << it->second.size() << std::endl;
     for (auto const &arc : it->second) {
@@ -36,7 +33,7 @@ int main() {
     std::cout << "No node 0" << std::endl;
   }
 
-  auto result_json = Dijkstra::optimize(graph);
+  auto result_json = Dijkstra::optimize(graph, 2349116488, 26201725);
   std::cout << result_json << std::endl;
 
   // Запуск інтерфейсу вводу-виводу boost::asio
@@ -75,7 +72,7 @@ int main() {
 
     auto a = 2 + 2;
 
-    response.body() = "Received data " + data;
+    response.body() = result_json;
     response.prepare_payload();
 
     // Відправлення відповіді клієнту

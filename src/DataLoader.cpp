@@ -1,6 +1,7 @@
 #include "DataLoader.hpp"
 
 void DataLoader::loadNodes(Graph &graph) {
+  std::cout << "Loading nodes..." << std::endl;
   auto data =
       txn_.exec("select node.id, latitude, longitude, facility_name, "
                 "address, facility_type from node inner join metadata on "
@@ -23,10 +24,11 @@ void DataLoader::loadNodes(Graph &graph) {
                        std::move(address), std::move(facilities)});
   }
 
-  std::cout << "Nodes loaded." << std::endl;
+  std::cout << "Nodes loaded [" << graph.nodes().size() << "]" << std::endl;
 }
 
 void DataLoader::loadArcs(Graph &graph) {
+  std::cout << "Loading arcs..." << std::endl;
   auto data = txn_.exec("select arc.id, from_node, to_node, street, distance, "
                         "transport_name, transport_type from arc inner join "
                         "transport on arc.transport_id = transport.id;");
@@ -49,5 +51,5 @@ void DataLoader::loadArcs(Graph &graph) {
                      std::move(types)});
   }
   
-    std::cout << "Arcs loaded." << std::endl;
+    std::cout << "Arcs loaded ["  << graph.arcs().size() << "]" << std::endl;
 }

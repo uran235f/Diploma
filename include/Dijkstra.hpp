@@ -32,7 +32,7 @@ struct Item {
 
 class Dijkstra {
 public:
-  static std::string optimize(Graph const &g);
+  static std::string optimize(Graph const &g, std::size_t from, std::size_t to);
 
 private:
   static std::string generate_json_result(Item const &item, Graph const &g,
