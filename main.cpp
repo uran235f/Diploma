@@ -33,7 +33,7 @@ int main() {
     std::cout << "No node 0" << std::endl;
   }
 
-  auto result_json = Dijkstra::optimize(graph, 2349116488, 26201725);
+  auto result_json = Dijkstra::optimize(graph, 249499947, 5965985171);
   std::cout << result_json << std::endl;
 
   // Запуск інтерфейсу вводу-виводу boost::asio

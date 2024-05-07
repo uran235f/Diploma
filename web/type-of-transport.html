@@ -12,17 +12,17 @@
 <body>
     <div class="button-container">
         <div class="button-container-2">
-            <a onclick="setType('Автомобіль'); sendRequest();">
+            <a onclick="setType('Автомобіль');" href="map.html">
                 <button class="button">Автомобіль</button>
             </a>
         </div>
         <div class="button-container-2">
-            <a onclick="setType('Громадський транспорт'); sendRequest();">
+            <a onclick="setType('Громадський транспорт');" href="map.html">
                 <button class="button">Громадський транспорт</button>
             </a>
         </div>
         <div class="button-container-2">
-            <a onclick="setType('Пішки'); sendRequest();">
+            <a onclick="setType('Пішки');" href="map.html">
                 <button class="button">Пішки</button>
             </a>
         </div>
@@ -30,9 +30,8 @@
             <a href="index.html"><button class="button button-2">Повернутись</button></a>
         </div>
     </div>
-    <script src="client.js"></script>
+     
     <script>
-        // Функція для збереження типу транспорту в локальному сховищі
         function setType(type) {
             localStorage.setItem('transportType', type);
         }
