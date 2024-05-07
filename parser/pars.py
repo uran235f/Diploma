@@ -195,7 +195,6 @@ way_index_to_transport_index = {}
 way_indexes =[]
 subway_way_ref = []
 
-
 for way in root.findall('way'):
     way_ref = way.get('id')
     ref_list = [nd.get('ref') for nd in way.findall('nd')]
@@ -207,14 +206,6 @@ for way in root.findall('way'):
             way_street = tag.get('v')
         if tag.get('k') == 'railway' and tag.get('v') == 'subway':
             subway_way_ref.append(way_ref)    
-
-    # for i in range(len(ref_list)):
-    #     for j in range(len(new_nodes)):
-    #         if ref_list[i] == new_nodes[j][0]:
-    #             ref_list[i] = node_counter
-    #             new_nodes[j][0] = node_counter
-    #             new_metadata[j][0] = node_counter
-    #             node_counter += 1
 
     for i in range(len(ref_list) - 1):
         current_node = ref_list[i]
@@ -275,43 +266,15 @@ for relation in root.findall('relation'):
 
             way_index_to_transport_index[way_index] = transport_index
 
-
             transport_index += 1
         
 node_ref_to_new_index = dict()
 
-print("Setting metadata and way indexes...")
-
-
-#assert len(new_nodes) == len(new_metadata)
-#for i in range(len(new_nodes)):
-#    new_nodes[i][0] = i
-#    new_metadata[i][0] = i
-
-#node_counter = 0
-#changed_nodes = set()
 print("Setting indexes...")
 for i in range(len(new_ways)):
     if way_index_to_transport_index.get(new_ways[i][0]) is not None:
         new_ways[i][-1] = way_index_to_transport_index[new_ways[i][0]]
         #print("new_ways", new_ways[i][-1])
-
-    #for j in range(len(new_nodes)):
-    #    #print("new_ways[i][1]", new_ways[i][1])
-    #    #print("new_nodes[j][0]", new_nodes[j][0])
-    #    #print("changed_nodes", changed_nodes)
-    #    if new_ways[i][1] not in changed_nodes and new_ways[i][1] == new_nodes[j][0]:
-    #        changed_nodes.add(new_ways[i][1])
-    #
-    #        new_ways[i][1] = node_counter
-    #        new_nodes[j][0] = node_counter
-    #        node_counter += 1
-    #    if  new_ways[i][2] not in changed_nodes and new_ways[i][2] == new_nodes[j][0]:
-    #        changed_nodes.add(new_ways[i][2])
-    #
-    #        new_ways[i][2] = node_counter
-    #        new_nodes[j][0] = node_counter
-    #        node_counter += 1
 
 print("Collecting data...")
 
