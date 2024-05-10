@@ -3,6 +3,7 @@
 #include "Graph.hpp"
 
 #include <memory>
+#include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
 
@@ -46,4 +47,6 @@ public:
 private:
   static std::string generate_json_result(Item const &item, Graph const &g,
                                           std::size_t start);
+  static void add_json_distance(nlohmann::json &to, double dist);
+  static nlohmann::json reduce_result(nlohmann::json &modifiable);
 };

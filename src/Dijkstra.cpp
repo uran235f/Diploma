@@ -1,8 +1,10 @@
 #include "Dijkstra.hpp"
 #include "Heap.hpp"
 
+#include <algorithm>
 #include <map>
-#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 std::string Dijkstra::optimize(Graph const &g, std::size_t from,
                                std::size_t to) {
@@ -99,7 +101,6 @@ std::string Dijkstra::optimize(Graph const &g, std::size_t from,
 
 std::string Dijkstra::generate_json_result(Item const &item, Graph const &g,
                                            std::size_t start) {
-  using json = nlohmann::json;
   json result;
 
   auto make_json_from = [&result](Node const &node) {
@@ -117,14 +118,41 @@ std::string Dijkstra::generate_json_result(Item const &item, Graph const &g,
       make_json_from(g.node(it->node_id));
     }
   }
+
   make_json_from(g.node(start));
   std::reverse(result.begin(), result.end());
 
-  json distance;
-  distance["distance"] = std::to_string(item.distance);
-  result.push_back(distance);
+  if (result.size() > 25) {
+    auto new_result = reduce_result(result);
+    add_json_distance(new_result, item.distance);
+    return to_string(new_result);
+  }
 
-  return nlohmann::to_string(result);
+  add_json_distance(result, item.distance);
+  return to_string(result);
+}
+
+void Dijkstra::add_json_distance(json &to, double dist) {
+  json distance;
+  distance["distance"] = std::to_string(dist);
+  to.push_back(distance);
+}
+
+json Dijkstra::reduce_result(json &modifiable) {
+  std::cout << "modifiable size=" << modifiable.size() << std::endl;
+
+  std::size_t index = (modifiable.size() - 2) / 23;
+  std::cout << "index=" << index << std::endl;
+
+  json rv;
+  rv.push_back(modifiable.front());
+  auto it = modifiable.begin() + index;
+  for (auto i = 0; i != 23; ++i, it += index) {
+    rv.push_back(*it);
+  }
+  rv.push_back(modifiable.back());
+
+  return rv;
 }
 
 void Item::print_chain(Item const &item, Graph const &g) {
