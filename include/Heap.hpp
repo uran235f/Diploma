@@ -1,7 +1,7 @@
+#include <algorithm>
 #include <iostream>
 #include <math.h>
 #include <vector>
-#include <algorithm>
 
 template <typename T> class Heap {
   std::vector<T> heap;
@@ -44,6 +44,7 @@ public:
   std::size_t size() const { return heap.size(); }
   T const &top() const { return heap.front(); }
   T pop();
+  void update();
   void push(T const &);
   Heap_iter find(T const &);
   int heap_height() const;
@@ -80,3 +81,5 @@ template <typename T> void Heap<T>::print_heap() const {
 template <typename T> typename Heap<T>::Heap_iter Heap<T>::find(T const &elem) {
   return std::find(heap.begin(), heap.end(), elem);
 }
+
+template <typename T> void Heap<T>::update() { build_min_heap(); }

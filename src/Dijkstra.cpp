@@ -75,6 +75,8 @@ std::string Dijkstra::optimize(Graph const &g, std::size_t from,
                     << " cost=" << it->second.distance << std::endl;
           std::cout << "[ITEM] " << item << std::endl;
 
+          queue.update();
+
         } else {
           std::cout << "[EXPENSIVE] to_id=" << arc.to() << " via arc=" << arc_id
                     << " cost=" << it->second.distance << std::endl;
