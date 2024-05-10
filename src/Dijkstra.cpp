@@ -64,11 +64,11 @@ std::string Dijkstra::optimize(Graph const &g, std::size_t from,
 
           auto to_update = queue.find(it->second);
           to_update->distance = new_dist;
-          to_update->parent = std::make_shared<Item>(item);
+          to_update->parent = item.parent;
           to_update->parent_arc = arc_id;
 
           it->second.distance = new_dist;
-          it->second.parent = std::make_shared<Item>(item);
+          it->second.parent = item.parent;
           it->second.parent_arc = arc_id;
 
           std::cout << "[UPDATE] to_id=" << arc.to() << " via arc=" << arc_id
