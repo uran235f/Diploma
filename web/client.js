@@ -15,40 +15,43 @@ async function initMap(text) {
         mapId: "DEMO_MAP_ID",
     });
     
-    const directionsService = new google.maps.DirectionsService();
+    //const directionsService = new google.maps.DirectionsService();
     const directionsRenderer = new google.maps.DirectionsRenderer();
-    directionsRenderer.setMap(map);
+    // directionsRenderer.setMap(map);
 
     const waypoints = locations.slice(0, -1).map(location => {
         return { lat: parseFloat(location.lat), lng: parseFloat(location.lon) };
     });
-
-    const request = {
-        origin: waypoints[0],
-        destination: waypoints[waypoints.length - 1],
-        travelMode: google.maps.TravelMode.DRIVING,
-        waypoints: waypoints.slice(1, -1).map(waypoint => ({
-            location: waypoint,
-            stopover: true
-        }))
-    };
-
-    directionsService.route(request, function(result, status) {
-        if (status == 'OK') {
-            directionsRenderer.setDirections(result);
-
-            const startMarker = new google.maps.Marker({
-                position: result.routes[0].legs[0].start_location,
-                map: map,
-                title: 'Start'
-            });
-            const endMarker = new google.maps.Marker({
-                position: result.routes[0].legs[result.routes[0].legs.length - 1].end_location,
-                map: map,
-                title: 'End'
-            });
-        }
+    map.fitBounds({
+        west: Math.min.apply(null, waypoints.map(point => point.lng)),
+        east: Math.max.apply(null, waypoints.map(point => point.lng)),
+        north: Math.min.apply(null, waypoints.map(point => point.lat)),
+        south: Math.max.apply(null, waypoints.map(point => point.lat)),
     });
+    
+    
+    for (var i = 0; i < waypoints.length; i++) {
+        new google.maps.Marker({
+            position: waypoints[i],
+            map: map,
+            title: waypoints[i].name
+        });
+    }
+
+    var stations = [];
+    for (var i = 0; i < waypoints.length; i++) {
+        console.log("parse lat " + parseFloat(waypoints[i].lat) + " lon " + parseFloat(waypoints[i].lng));
+        var loc = new google.maps.LatLng(parseFloat(waypoints[i].lat),parseFloat(waypoints[i].lng));
+        stations.push(loc);
+    }
+    var flightPath = new google.maps.Polyline({
+        path: stations,
+        geodesic: true,
+        strokeColor: "#FF0000",
+        strokeOpacity: 1.0,
+        strokeWeight: 10
+    });
+    flightPath.setMap(map);
 }
 
 function parseJSONString(jsonString) {
@@ -91,3 +94,4 @@ function sendRequest() {
         .then(text => initMap(text))
         .catch(error => console.error('There was an error with the request:', error));
 }
+    

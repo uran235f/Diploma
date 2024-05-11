@@ -124,11 +124,11 @@ std::string Dijkstra::generate_json_result(Item const &item, Graph const &g,
   make_json_from(g.node(start));
   std::reverse(result.begin(), result.end());
 
-  if (result.size() > 25) {
-    auto new_result = reduce_result(result);
-    add_json_distance(new_result, item.distance);
-    return to_string(new_result);
-  }
+  // if (result.size() > 25) {
+  //   auto new_result = reduce_result(result);
+  //   add_json_distance(new_result, item.distance);
+  //   return to_string(new_result);
+  // }
 
   add_json_distance(result, item.distance);
   return to_string(result);
