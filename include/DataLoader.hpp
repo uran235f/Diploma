@@ -20,15 +20,9 @@ public:
   DataLoader &operator=(DataLoader const &) = delete;
   DataLoader &operator=(DataLoader &&) = delete;
 
-  //   DataLoader(const std::string &dbname, const std::string &user,
-  //              const std::string &password, const std::string &host,
-  //              const std::string &port)
-  //       : conn("jdbc:postgresql://localhost:5432/graphdb"), txn(conn) {
-  //     std::cout << "DataLoader initialized" << std::endl;
-  //   }
-
   void loadNodes(Graph &graph);
   void loadArcs(Graph &graph);
+  static void load(Graph &graph);
 
 private:
   pqxx::connection conn_;

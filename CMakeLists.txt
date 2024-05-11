@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 17)
 message("Compiler: ${CMAKE_C_COMPILER}")
 message("Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")
 
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED serialization)
 find_package(nlohmann_json REQUIRED)
 find_library(PQXX_LIB pqxx)
 
@@ -21,4 +21,4 @@ set(CMAKE_CURRENT_SOURCE_DIR, src)
 add_subdirectory(include)
 add_subdirectory(src)
 
-target_link_libraries(${PROJECT_NAME} ${PQXX_LIB})
+target_link_libraries(${PROJECT_NAME} ${PQXX_LIB} ${Boost_LIBRARIES})

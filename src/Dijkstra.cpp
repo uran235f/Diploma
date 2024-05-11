@@ -48,17 +48,19 @@ std::string Dijkstra::optimize(Graph const &g, std::size_t from,
         Item new_item = Item{arc.to(), arc_id, std::make_shared<Item>(item),
                              arc.distance() + item.distance};
 
-        std::cout << "[ITEM] " << item << std::endl;
-        std::cout << "[ITEM] " << new_item << std::endl;
+        std::cout << "[CURR] " << item << std::endl;
+        std::cout << "[NOT VISITED][NEW ITEM] " << new_item << std::endl;
 
         std::cout << "Not visited: to_id=" << arc.to() << " via arc=" << arc_id
-                  << " cost=" << new_item.distance << std::endl;
+                  << " cost=" << new_item.distance << std::endl<< std::endl;
 
         visited[arc.to()] = new_item;
         queue.push(new_item);
       } else {
 
         auto new_dist = arc.distance() + item.distance;
+
+        std::cout << "[VISITED][CURR] " << item << std::endl;
 
         if (new_dist < it->second.distance) {
 
@@ -105,7 +107,7 @@ std::string Dijkstra::generate_json_result(Item const &item, Graph const &g,
                                            std::size_t start) {
   json result;
 
-  auto make_json_from = [&result](Node const &node) {
+  auto make_json_from = [&](Node const &node) {
     json json_item;
     json_item["node"] = std::to_string(node.node());
     json_item["lat"] = std::to_string(node.data()->lat());
@@ -146,13 +148,21 @@ json Dijkstra::reduce_result(json &modifiable) {
   std::size_t index = (modifiable.size() - 2) / 23;
   std::cout << "index=" << index << std::endl;
 
+  char letter = 'A';
+
   json rv;
   rv.push_back(modifiable.front());
+  rv.back()["ASTANA"] = static_cast<char>(letter);
+  ++letter;
+
   auto it = modifiable.begin() + index;
   for (auto i = 0; i != 23; ++i, it += index) {
     rv.push_back(*it);
+    rv.back()["ASTANA"] = static_cast<char>(letter);
+    ++letter;
   }
   rv.push_back(modifiable.back());
+  rv.back()["ASTANA"] = static_cast<char>(letter);
 
   return rv;
 }

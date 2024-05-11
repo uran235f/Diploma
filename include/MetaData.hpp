@@ -1,5 +1,9 @@
 #pragma once
 
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/set.hpp>
+#include <boost/serialization/string.hpp>
 #include <set>
 #include <sstream>
 #include <string>
@@ -30,6 +34,8 @@ enum class Facility {
 };
 
 class MetaData {
+  friend class boost::serialization::access;
+
 public:
   MetaData() = default;
   MetaData(double lat, double lon, std::string const &name,
@@ -61,6 +67,12 @@ public:
   std::string const &address() const { return address_; }
   std::set<Facility> const &facilities() const { return facilities_; }
 
+  template <class Archive>
+  void save(Archive &ar, const unsigned int version) const;
+  template <class Archive> void load(Archive &ar, const unsigned int version);
+
+  BOOST_SERIALIZATION_SPLIT_MEMBER();
+
 private:
   double lat_;
   double lon_;
@@ -68,3 +80,13 @@ private:
   std::string address_;
   std::set<Facility> facilities_;
 };
+
+template <class Archive>
+void MetaData::save(Archive &ar, const unsigned int version) const {
+  ar &lat_ &lat_ &name_ &address_ &facilities_;
+}
+
+template <class Archive>
+void MetaData::load(Archive &ar, const unsigned int version) {
+  ar &lat_ &lat_ &name_ &address_ &facilities_;
+}

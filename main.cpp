@@ -16,11 +16,7 @@ using tcp = net::ip::tcp;
 
 int main() {
   Graph graph;
-  auto loader = std::make_unique<DataLoader>();
-  loader->loadNodes(graph);
-  loader->loadArcs(graph);
-
-  graph.build_master_graph();
+  DataLoader::load(graph);
 
   auto it = graph.graph().find(26201725);
   if (it != graph.graph().end()) {

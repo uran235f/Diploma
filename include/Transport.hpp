@@ -1,4 +1,10 @@
 #pragma once
+
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/level_enum.hpp>
+#include <boost/serialization/set.hpp>
+#include <boost/serialization/string.hpp>
 #include <set>
 #include <sstream>
 #include <string>
@@ -26,7 +32,23 @@ public:
     return os << oss.str();
   }
 
+  template <class Archive>
+  void save(Archive &ar, const unsigned int version) const;
+  template <class Archive> void load(Archive &ar, const unsigned int version);
+
+  BOOST_SERIALIZATION_SPLIT_MEMBER();
+
 private:
   std::string name_;
   std::set<TransportType> transportTypes_;
 };
+
+template <class Archive>
+void Transport::save(Archive &ar, const unsigned int version) const {
+  ar &name_ &transportTypes_;
+}
+
+template <class Archive>
+void Transport::load(Archive &ar, const unsigned int version) {
+  ar &name_ &transportTypes_;
+}

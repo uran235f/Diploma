@@ -1,9 +1,15 @@
 #pragma once
 
-#include "MetaData.hpp"
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/shared_ptr.hpp>
 #include <memory>
 
+#include "MetaData.hpp"
+
 class Node {
+  friend class boost::serialization::access;
+
 public:
   Node() = default;
 
@@ -26,7 +32,23 @@ public:
     return os << oss.str();
   }
 
+  template <class Archive>
+  void save(Archive &ar, const unsigned int version) const;
+  template <class Archive> void load(Archive &ar, const unsigned int version);
+
+  BOOST_SERIALIZATION_SPLIT_MEMBER();
+
 private:
   std::size_t id_;
   std::shared_ptr<MetaData> data_;
 };
+
+template <class Archive>
+void Node::save(Archive &ar, const unsigned int version) const {
+  ar &id_ &data_;
+}
+
+template <class Archive>
+void Node::load(Archive &ar, const unsigned int version) {
+  ar &id_ &data_;
+}

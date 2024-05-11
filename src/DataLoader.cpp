@@ -1,5 +1,9 @@
 #include "DataLoader.hpp"
 
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <fstream>
+
 void DataLoader::loadNodes(Graph &graph) {
   std::cout << "Loading nodes..." << std::endl;
   auto data =
@@ -50,6 +54,27 @@ void DataLoader::loadArcs(Graph &graph) {
                      row["distance"].as<double>(), std::move(name),
                      std::move(types)});
   }
-  
-    std::cout << "Arcs loaded ["  << graph.arcs().size() << "]" << std::endl;
+
+  std::cout << "Arcs loaded [" << graph.arcs().size() << "]" << std::endl;
+}
+
+void DataLoader::load(Graph &graph) {
+  std::ifstream ifs("graph");
+  if (!ifs.is_open()) {
+    std::cout << "No graph cache found." << std::endl;
+    auto loader = std::make_unique<DataLoader>();
+    loader->loadNodes(graph);
+    loader->loadArcs(graph);
+    graph.build_master_graph();
+    {
+      std::cout << "Generating graph cache..." << std::endl;
+      std::ofstream ofs("graph");
+      boost::archive::text_oarchive oa(ofs);
+      oa << graph;
+    }
+  } else {
+    std::cout << "Found graph cache. Reading..." << std::endl;
+    boost::archive::text_iarchive ia(ifs);
+    ia >> graph;
+  }
 }
