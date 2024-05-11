@@ -13,7 +13,7 @@ std::string Dijkstra::optimize(Graph const &g, std::size_t from,
 
   std::size_t destination_node = to;
   std::size_t start_node = from;
-  auto start = Item{start_node, std::nullopt, nullptr, 0};
+  auto start = Item{start_node, std::nullopt, std::nullopt, nullptr, 0};
 
   bool reached_dest = false;
   std::optional<Item> result;
@@ -37,22 +37,25 @@ std::string Dijkstra::optimize(Graph const &g, std::size_t from,
       auto const &arc = g.arc(arc_id);
 
       if (arc.to() == destination_node) {
-        result = Item{arc.to(), arc_id, std::make_shared<Item>(item),
-                      arc.distance() + item.distance};
+        result =
+            Item{arc.to(), arc_id, *arc.transportData()->transport().begin(),
+                 std::make_shared<Item>(item), arc.distance() + item.distance};
         reached_dest = true;
         break;
       }
 
       auto it = visited.find(arc.to());
       if (it == visited.end()) {
-        Item new_item = Item{arc.to(), arc_id, std::make_shared<Item>(item),
-                             arc.distance() + item.distance};
+        Item new_item =
+            Item{arc.to(), arc_id, *arc.transportData()->transport().begin(),
+                 std::make_shared<Item>(item), arc.distance() + item.distance};
 
         std::cout << "[CURR] " << item << std::endl;
-        std::cout << "[NOT VISITED][NEW ITEM] " << new_item << std::endl;
+        std::cout << "[NEW ITEM] " << new_item << std::endl;
 
         std::cout << "Not visited: to_id=" << arc.to() << " via arc=" << arc_id
-                  << " cost=" << new_item.distance << std::endl<< std::endl;
+                  << " cost=" << new_item.distance << std::endl
+                  << std::endl;
 
         visited[arc.to()] = new_item;
         queue.push(new_item);
@@ -68,10 +71,12 @@ std::string Dijkstra::optimize(Graph const &g, std::size_t from,
           to_update->distance = new_dist;
           to_update->parent = item.parent;
           to_update->parent_arc = arc_id;
+          to_update->transport = *arc.transportData()->transport().begin();
 
           it->second.distance = new_dist;
           it->second.parent = item.parent;
           it->second.parent_arc = arc_id;
+          it->second.transport = *arc.transportData()->transport().begin();
 
           std::cout << "[UPDATE] to_id=" << arc.to() << " via arc=" << arc_id
                     << " cost=" << it->second.distance << std::endl;
@@ -107,23 +112,33 @@ std::string Dijkstra::generate_json_result(Item const &item, Graph const &g,
                                            std::size_t start) {
   json result;
 
-  auto make_json_from = [&](Node const &node) {
+  auto make_node_json = [&](Node const &node) -> nlohmann::json {
     json json_item;
     json_item["node"] = std::to_string(node.node());
     json_item["lat"] = std::to_string(node.data()->lat());
     json_item["lon"] = std::to_string(node.data()->lon());
     json_item["name"] = node.data()->name();
     json_item["facilities"] = node.data()->facilities();
-    result.push_back(json_item);
+    return json_item;
+  };
+
+  auto add_arc_json = [](json &json, TransportType transport,
+                         std::string const &name) -> nlohmann::json {
+    json["transport_name"] = name;
+    json["transport"] = transport;
+    return json;
   };
 
   for (Item const *it = &item; it != nullptr; it = it->parent.get()) {
     if (it->parent_arc) {
-      make_json_from(g.node(it->node_id));
+      auto node_json = make_node_json(g.node(it->node_id));
+      add_arc_json(node_json, it->transport.value(),
+                   g.arc(*it->parent_arc).transportData()->name());
+      result.push_back(node_json);
     }
   }
 
-  make_json_from(g.node(start));
+  make_node_json(g.node(start));
   std::reverse(result.begin(), result.end());
 
   // if (result.size() > 25) {

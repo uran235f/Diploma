@@ -32,6 +32,9 @@ public:
     return os << oss.str();
   }
 
+  std::string const &name() const { return name_; }
+  std::set<TransportType> const &transport() const { return transportTypes_; }
+
   template <class Archive>
   void save(Archive &ar, const unsigned int version) const;
   template <class Archive> void load(Archive &ar, const unsigned int version);

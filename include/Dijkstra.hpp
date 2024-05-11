@@ -10,6 +10,7 @@
 struct Item {
   std::size_t node_id;
   std::optional<std::size_t> parent_arc;
+  std::optional<TransportType> transport;
   std::shared_ptr<Item> parent;
   double distance;
 
@@ -30,7 +31,8 @@ struct Item {
     std::ostringstream oss;
     oss << "Item: node " << item.node_id;
     if (item.parent_arc) {
-      oss << " via " << *item.parent_arc;
+      oss << " via " << *item.parent_arc << "["
+          << static_cast<int>(*item.transport) << "]";
     } else {
       oss << " via none";
     }
