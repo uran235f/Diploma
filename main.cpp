@@ -8,31 +8,35 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <iostream>
+#include <nlohmann/json.hpp>
 
 namespace beast = boost::beast;
 namespace http = beast::http;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
+using json = nlohmann::json;
 
 int main() {
   Graph graph;
   DataLoader::load(graph);
 
-  auto it = graph.graph().find(26201725);
-  if (it != graph.graph().end()) {
-    std::cout << "Arcs in node 0 - " << it->second.size() << std::endl;
-    for (auto const &arc : it->second) {
-      std::cout << "Arcid " << arc << std::endl;
-      std::cout << "from node 0 -> " << graph.arcs().at(arc) << std::endl;
-    }
-  } else {
-    std::cout << "No node 0" << std::endl;
-  }
-  //1721047151
-  //26327864
+  auto requested_lat = 50.456206;
+  auto requested_lon = 30.613841;
 
-  auto result_json = Dijkstra::optimize(graph, 1152597374, 1654330486);
-  std::cout << result_json << std::endl;
+  // 1721047151
+  // 26327864
+
+  json result_json;
+  auto closest =
+      Dijkstra::find_closed_node(graph, requested_lat, requested_lon);
+  if (closest) {
+    std::cout << "closest=" << *closest << std::endl;
+    result_json = Dijkstra::optimize(graph, *closest, 1654330486);
+    std::cout << result_json << std::endl;
+  } else {
+    std::cout << "Closest node not found. Graph is empty" << std::endl;
+    result_json.clear();
+  }
 
   // Запуск інтерфейсу вводу-виводу boost::asio
   net::io_context ioc{1};

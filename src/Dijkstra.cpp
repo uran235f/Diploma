@@ -108,6 +108,22 @@ std::string Dijkstra::optimize(Graph const &g, std::size_t from,
   return "";
 }
 
+std::optional<nodeId> Dijkstra::find_closed_node(Graph const &g, double lat,
+                                                 double lon) {
+  auto min_distance = std::numeric_limits<double>::max();
+  std::optional<nodeId> closest = std::nullopt;
+  for (auto const &[node_id, node] : g.nodes()) {
+    auto lat_diff = abs(lat - node.data()->lat());
+    auto lon_diff = abs(lon - node.data()->lon());
+    auto distance = sqrt((pow(lat_diff, 2) + pow(lon_diff, 2)));
+    if (min_distance > distance) {
+      min_distance = distance;
+      closest = node_id;
+    }
+  }
+  return closest;
+}
+
 std::string Dijkstra::generate_json_result(Item const &item, Graph const &g,
                                            std::size_t start) {
   json result;
@@ -147,11 +163,11 @@ std::string Dijkstra::generate_json_result(Item const &item, Graph const &g,
   //   return to_string(new_result);
   // }
 
-  add_json_distance(result, item.distance);
+  add_additional_fields(result, item.distance);
   return to_string(result);
 }
 
-void Dijkstra::add_json_distance(json &to, double dist) {
+void Dijkstra::add_additional_fields(json &to, double dist) {
   json distance;
   distance["distance"] = std::to_string(dist);
   to.push_back(distance);

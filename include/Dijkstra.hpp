@@ -46,9 +46,14 @@ class Dijkstra {
 public:
   static std::string optimize(Graph const &g, std::size_t from, std::size_t to);
 
+  static std::optional<nodeId> find_closed_node(Graph const &g, double lat,
+                                                double lon);
+
 private:
   static std::string generate_json_result(Item const &item, Graph const &g,
                                           std::size_t start);
-  static void add_json_distance(nlohmann::json &to, double dist);
+  static void add_additional_fields(nlohmann::json &to, double dist);
   static nlohmann::json reduce_result(nlohmann::json &modifiable);
+
+  static void bfs_search(Graph const &g);
 };
