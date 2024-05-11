@@ -83,10 +83,10 @@ private:
 
 template <class Archive>
 void MetaData::save(Archive &ar, const unsigned int version) const {
-  ar &lat_ &lat_ &name_ &address_ &facilities_;
+  ar &lat_ &lon_ &name_ &address_ &facilities_;
 }
 
 template <class Archive>
 void MetaData::load(Archive &ar, const unsigned int version) {
-  ar &lat_ &lat_ &name_ &address_ &facilities_;
+  ar &lat_ &lon_ &name_ &address_ &facilities_;
 }
