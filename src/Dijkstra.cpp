@@ -105,6 +105,12 @@ std::string Dijkstra::optimize(Graph const &g, std::size_t from,
     return generate_json_result(*result, g, start_node);
   }
 
+  //   std::stringstream oss;
+  // oss << "No path to dest=" << destination_node << std::endl;
+  // json json_result;
+  // json_result["status"] = oss.str();
+  // return to_string(json_result);
+
   std::cout << "No path to dest=" << destination_node << std::endl;
   return "";
 }

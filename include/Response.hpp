@@ -20,7 +20,7 @@ public:
     response.set(http::field::access_control_allow_origin, "*");
     response.set(http::field::access_control_allow_headers, "Content-Type");
     response.keep_alive(request.keep_alive());
-    response.body() = json.empty() ? "" : json;
+    response.body() = json.empty() || json.is_null() ? "" : to_string(json);
     response.prepare_payload();
     return response;
   }

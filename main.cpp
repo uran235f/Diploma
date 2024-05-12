@@ -42,8 +42,10 @@ int main() {
     json result_json;
 
     if (data.empty()) {
-      std::cout << "Request is empty" << std::endl;
       // Відправлення відповіді клієнту
+      json status;
+      status["status"] = "Request is empty";
+      result_json.push_back(status);
       auto response = Response::withPayload(result_json, request);
       http::write(socket, response);
       continue;
@@ -57,8 +59,10 @@ int main() {
         graph, parsedRequest.getLatitude(), parsedRequest.getLongitude());
 
     if (!closest) {
-      std::cout << "Closest node not found. Graph is empty" << std::endl;
       // Відправлення відповіді клієнту
+      json status;
+      status["status"] = "Closest node not found. Graph is empty";
+      result_json.push_back(status);
       auto response = Response::withPayload(result_json, request);
       http::write(socket, response);
       continue;

@@ -47,7 +47,6 @@ async function sendRequest() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
-        console.log("here1")
         const text = await response.text();
         console.log("response text " + text);
         await addRouteToExistingMap(text);
@@ -62,6 +61,7 @@ async function sendRequest() {
 async function addRouteToExistingMap(text) {
     const locations = parseJSONString(text);
     const waypoints = locations.slice(0, -1).map(location => {
+        console.log("lat: " + location.lat + " parsed " + parseFloat(location.lat));
         return { lat: parseFloat(location.lat), lng: parseFloat(location.lon), transport: location.transport };
     });
     console.log("waypoints", waypoints)
@@ -114,6 +114,7 @@ async function addRouteToExistingMap(text) {
 function parseJSONString(jsonString) {
     try {
         const data = JSON.parse(jsonString);
+        console.log("data " + data + " is array " + Array.isArray(data) + " type " + typeof(data));
         if (Array.isArray(data)) {
             console.log(data);
             return data;
