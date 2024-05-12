@@ -20,8 +20,8 @@ int main() {
   Graph graph;
   DataLoader::load(graph);
 
-  auto requested_lat = 50.456206;
-  auto requested_lon = 30.613841;
+  auto requested_lat = 50.457027;
+  auto requested_lon = 30.619679;
 
   // 1721047151
   // 26327864

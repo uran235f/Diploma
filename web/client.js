@@ -57,10 +57,10 @@ async function sendRequest() {
 
 async function addRouteToExistingMap(text) {
     const locations = parseJSONString(text);
-    
     const waypoints = locations.slice(0, -1).map(location => {
-        return { lat: parseFloat(location.lat), lng: parseFloat(location.lon) };
+        return { lat: parseFloat(location.lat), lng: parseFloat(location.lon), transport: location.transport};
     });
+    console.log("waypoints", waypoints)
     
     map.fitBounds({
         west: Math.min.apply(null, waypoints.map(point => point.lng)),
@@ -69,34 +69,49 @@ async function addRouteToExistingMap(text) {
         south: Math.max.apply(null, waypoints.map(point => point.lat)),
     });
     
-    for (var i = 0; i < waypoints.length; i++) {
-        new google.maps.Marker({
-            position: waypoints[i],
-            map: map,
-            title: waypoints[i].name
-        });
-    }
+    //for (var i = 0; i < waypoints.length; i++) {
+    //    new google.maps.Marker({
+    //        position: waypoints[i],
+    //        map: map,
+    //        title: waypoints[i].name
+    //    });
+    //}
 
     var stations = [];
+    var trans = [];
     for (var i = 0; i < waypoints.length; i++) {
-        console.log("parse lat " + parseFloat(waypoints[i].lat) + " lon " + parseFloat(waypoints[i].lng));
+        //console.log("parse lat " + parseFloat(waypoints[i].lat) + " lon " + parseFloat(waypoints[i].lng));
         var loc = new google.maps.LatLng(parseFloat(waypoints[i].lat),parseFloat(waypoints[i].lng));
+        trans.push(waypoints[i].transport)
         stations.push(loc);
     }
-    var flightPath = new google.maps.Polyline({
-        path: stations,
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 10
-    });
-    flightPath.setMap(map);
+    console.log("trans", trans)
+
+    const transportColors = {
+        0: "#ea4335", // u-bahn red
+        1: "#34a853", // public green
+        2: "#673ab7", // car blue
+        3: "#fbbc05"  // pedestrian orange
+    };
+
+    for (let i = 0; i < waypoints.length - 1; i++) {
+        const routeColor = transportColors[waypoints[i].transport];
+        const flightPath = new google.maps.Polyline({
+            path: [stations[i], stations[i + 1]],
+            geodesic: true,
+            strokeColor: routeColor,
+            strokeOpacity: 1.0,
+            strokeWeight: 10
+        });
+        flightPath.setMap(map);
+    }
 }
 
 function parseJSONString(jsonString) {
     try {
         const data = JSON.parse(jsonString);
         if (Array.isArray(data)) {
+            console.log(data);
             return data;
         } else {
             console.error("Input is not an array.");
