@@ -14,9 +14,9 @@ std::string Request::getMedicalFacility() const { return medicalFacility; }
 std::string Request::getRouteType() const { return routeType; }
 
 Request Request::fromJsonString(std::string &jsonString) {
+  std::cout << "request : " << jsonString << std::endl;
   auto json = nlohmann::json::parse(jsonString);
-  return {std::stod(json["latitude"].get<std::string>()),
-          std::stod(json["longitude"].get<std::string>()),
+  return {json["latitude"].get<double>(), json["longitude"].get<double>(),
           json["medicalFacility"].get<std::string>(),
           json["routeType"].get<std::string>()};
 }

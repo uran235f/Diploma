@@ -59,6 +59,8 @@ int main() {
     std::string data = request.body();
     if (!data.empty()) {
       std::cout << Request::fromJsonString(data);
+    } else {
+      std::cout << "Request is empty" << std::endl;
     }
 
     // Створення відповіді сервера

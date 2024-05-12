@@ -4,3 +4,4 @@
 # exclusions
 /build
 graph
+parser/
