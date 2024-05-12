@@ -1,19 +1,16 @@
 #pragma once
+
 #include <iostream>
 #include <string>
 
 class Request {
 public:
-  Request() = default;
-  Request(double latitude, double longitude, std::string const &medicalFacility,
-          std::string const &routeType);
-
-  double getLatitude() const;
-  double getLongitude() const;
-  std::string getMedicalFacility() const;
-  std::string getRouteType() const;
-
   static Request fromJsonString(std::string &jsonString);
+
+  double getLatitude() const { return latitude; }
+  double getLongitude() const { return longitude; }
+  std::string getMedicalFacility() const { return medicalFacility; }
+  std::string getRouteType() const { return routeType; }
 
   friend std::ostream &operator<<(std::ostream &os, Request const &rq) {
     os << "Request: lat=" << rq.latitude << " lon=" << rq.longitude
@@ -23,6 +20,10 @@ public:
   }
 
 private:
+  Request() = default;
+  Request(double latitude, double longitude, std::string const &medicalFacility,
+          std::string const &routeType);
+
   double latitude;
   double longitude;
   std::string medicalFacility;

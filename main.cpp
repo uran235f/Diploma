@@ -3,6 +3,7 @@
 #include "Graph.hpp"
 #include "Node.hpp"
 #include "Request.hpp"
+#include "Response.hpp"
 
 #include <boost/asio.hpp>
 #include <boost/beast/core.hpp>
@@ -20,24 +21,6 @@ int main() {
   Graph graph;
   DataLoader::load(graph);
 
-  auto requested_lat = 50.457027;
-  auto requested_lon = 30.619679;
-
-  // 1721047151
-  // 26327864
-
-  json result_json;
-  auto closest =
-      Dijkstra::find_closed_node(graph, requested_lat, requested_lon);
-  if (closest) {
-    std::cout << "closest=" << *closest << std::endl;
-    result_json = Dijkstra::optimize(graph, *closest, 1654330486);
-    std::cout << result_json << std::endl;
-  } else {
-    std::cout << "Closest node not found. Graph is empty" << std::endl;
-    result_json.clear();
-  }
-
   // Запуск інтерфейсу вводу-виводу boost::asio
   net::io_context ioc{1};
 
@@ -54,32 +37,39 @@ int main() {
     beast::flat_buffer buffer;
     http::request<http::string_body> request;
     http::read(socket, buffer, request);
-
-    // Отримання параметра з запиту
     std::string data = request.body();
-    if (!data.empty()) {
-      std::cout << Request::fromJsonString(data);
-    } else {
+
+    json result_json;
+
+    if (data.empty()) {
       std::cout << "Request is empty" << std::endl;
+      // Відправлення відповіді клієнту
+      auto response = Response::withPayload(result_json, request);
+      http::write(socket, response);
+      continue;
     }
 
-    // Створення відповіді сервера
-    http::response<http::string_body> response{http::status::ok,
-                                               request.version()};
-    response.set(http::field::content_type, "text/plain");
-    response.set(http::field::access_control_allow_origin,
-                 "*"); // Додавання заголовка Access-Control-Allow-Origin
-    response.set(
-        http::field::access_control_allow_headers,
-        "Content-Type"); // Додавання заголовка Access-Control-Allow-Headers
-    response.keep_alive(request.keep_alive());
+    // Отримання параметра з запиту
+    auto parsedRequest = Request::fromJsonString(data);
+    std::cout << parsedRequest;
 
-    auto a = 2 + 2;
+    auto closest = Dijkstra::find_closed_node(
+        graph, parsedRequest.getLatitude(), parsedRequest.getLongitude());
 
-    response.body() = result_json;
-    response.prepare_payload();
+    if (!closest) {
+      std::cout << "Closest node not found. Graph is empty" << std::endl;
+      // Відправлення відповіді клієнту
+      auto response = Response::withPayload(result_json, request);
+      http::write(socket, response);
+      continue;
+    }
+
+    std::cout << "closest=" << *closest << std::endl;
+    result_json = Dijkstra::optimize(graph, *closest, 1654330486);
+    std::cout << result_json << std::endl;
 
     // Відправлення відповіді клієнту
+    auto response = Response::withPayload(result_json, request);
     http::write(socket, response);
   }
 

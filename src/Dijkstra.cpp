@@ -30,6 +30,7 @@ std::string Dijkstra::optimize(Graph const &g, std::size_t from,
     auto arcs = g[item.node_id];
 
     if (!arcs.has_value()) {
+      std::cout << "[WORKING] no arcs available" << std::endl;
       continue;
     }
 

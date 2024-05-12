@@ -5,7 +5,7 @@ let clickedLng;
 async function initSimpleMap() {
     const facilityType = localStorage.getItem('facilityType');
     const transportType = localStorage.getItem('transportType');
-    const centerPosition = { lat: +localStorage.getItem('latitude'), lng: +localStorage.getItem('longitude') };
+    const centerPosition = { lat: 50.45379508376816, lng: 30.62703245899965 };
     //@ts-ignore
     const { Map } = await google.maps.importLibrary("maps");
     map = new Map(document.getElementById("map"), {
@@ -13,7 +13,7 @@ async function initSimpleMap() {
         center: centerPosition,
         mapId: "DEMO_MAP_ID",
     });
-    map.addListener('click', function(event) {
+    map.addListener('click', function (event) {
         clickedLat = event.latLng.lat();
         clickedLng = event.latLng.lng();
         document.getElementById('coordinates').innerHTML = 'Координати: ' + clickedLat + ', ' + clickedLng;
@@ -33,17 +33,18 @@ async function sendRequest() {
 
     const data = {
         latitude: clickedLat,
-        longitude: clickedLng,   
+        longitude: clickedLng,
         medicalFacility: facilityType,
         routeType: transportType
     };
 
     console.log("data " + data.routeType);
-    
+
     try {
         const response = await fetch(url, {
+            method: 'delete',
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
         console.log("here1")
@@ -52,23 +53,26 @@ async function sendRequest() {
         await addRouteToExistingMap(text);
     } catch (error) {
         console.error('There was an error with the request:', error);
+    } finally {
+        clickedLng = null;
+        clickedLng = null;
     }
 }
 
 async function addRouteToExistingMap(text) {
     const locations = parseJSONString(text);
     const waypoints = locations.slice(0, -1).map(location => {
-        return { lat: parseFloat(location.lat), lng: parseFloat(location.lon), transport: location.transport};
+        return { lat: parseFloat(location.lat), lng: parseFloat(location.lon), transport: location.transport };
     });
     console.log("waypoints", waypoints)
-    
+
     map.fitBounds({
         west: Math.min.apply(null, waypoints.map(point => point.lng)),
         east: Math.max.apply(null, waypoints.map(point => point.lng)),
         north: Math.min.apply(null, waypoints.map(point => point.lat)),
         south: Math.max.apply(null, waypoints.map(point => point.lat)),
     });
-    
+
     //for (var i = 0; i < waypoints.length; i++) {
     //    new google.maps.Marker({
     //        position: waypoints[i],
@@ -81,7 +85,7 @@ async function addRouteToExistingMap(text) {
     var trans = [];
     for (var i = 0; i < waypoints.length; i++) {
         //console.log("parse lat " + parseFloat(waypoints[i].lat) + " lon " + parseFloat(waypoints[i].lng));
-        var loc = new google.maps.LatLng(parseFloat(waypoints[i].lat),parseFloat(waypoints[i].lng));
+        var loc = new google.maps.LatLng(parseFloat(waypoints[i].lat), parseFloat(waypoints[i].lng));
         trans.push(waypoints[i].transport)
         stations.push(loc);
     }
