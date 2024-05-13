@@ -9,8 +9,8 @@ public:
 
   double getLatitude() const { return latitude; }
   double getLongitude() const { return longitude; }
-  std::string getMedicalFacility() const { return medicalFacility; }
-  std::string getRouteType() const { return routeType; }
+  int getMedicalFacility() const { return medicalFacility; }
+  int getRouteType() const { return routeType; }
 
   friend std::ostream &operator<<(std::ostream &os, Request const &rq) {
     os << "Request: lat=" << rq.latitude << " lon=" << rq.longitude
@@ -21,11 +21,11 @@ public:
 
 private:
   Request() = default;
-  Request(double latitude, double longitude, std::string const &medicalFacility,
-          std::string const &routeType);
+  Request(double latitude, double longitude, int medicalFacility,
+          int routeType);
 
   double latitude;
   double longitude;
-  std::string medicalFacility;
-  std::string routeType;
+  int medicalFacility;
+  int routeType;
 };

@@ -3,17 +3,39 @@
 
 #include <algorithm>
 #include <map>
+#include <queue>
 
 using json = nlohmann::json;
 
-std::string Dijkstra::optimize(Graph const &g, std::size_t from,
-                               std::size_t to) {
+std::string Dijkstra::optimize(Graph const &g, Request const &request) {
+
+  auto closest_departure_node = Dijkstra::find_closed_node(
+      g, request.getLatitude(), request.getLongitude());
+
+  if (!closest_departure_node) {
+    json status;
+    status["status"] = "Closest node not found. Graph is empty";
+    return to_string(status);
+  }
+
   Heap<Item> queue;
   std::map<size_t, Item> visited;
 
-  std::size_t destination_node = to;
-  std::size_t start_node = from;
-  auto start = Item{start_node, std::nullopt, std::nullopt, nullptr, 0};
+  std::size_t depature_node = *closest_departure_node;
+
+  auto destination_node_opt =
+      bfs(g, depature_node, request.getMedicalFacility());
+  if (destination_node_opt) {
+    std::cout << "Can reach facility type " << request.getMedicalFacility()
+              << " at node " << *destination_node_opt << std::endl;
+  } else {
+    std::cout << "[WARN] Facility type " << request.getMedicalFacility()
+              << " is unreachable from node " << depature_node << std::endl;
+    return "";
+  }
+
+  std::size_t destination_node = *destination_node_opt;
+  auto start = Item{depature_node, std::nullopt, std::nullopt, nullptr, 0};
 
   bool reached_dest = false;
   std::optional<Item> result;
@@ -99,10 +121,12 @@ std::string Dijkstra::optimize(Graph const &g, std::size_t from,
 
   std::string json_result = "";
 
+  // g.node(1654330486).data()->addFacility(static_cast<Facility>(0));
+
   if (result) {
     std::cout << "Shortest dist=" << result->distance << std::endl;
     Item::print_chain(*result, g);
-    return generate_json_result(*result, g, start_node);
+    return generate_json_result(*result, g, depature_node);
   }
 
   //   std::stringstream oss;
@@ -113,6 +137,60 @@ std::string Dijkstra::optimize(Graph const &g, std::size_t from,
 
   std::cout << "No path to dest=" << destination_node << std::endl;
   return "";
+}
+
+std::optional<nodeId> Dijkstra::bfs(Graph const &g,
+                                    std::optional<nodeId> const &from,
+                                    int requested_facility) {
+  if (!from) {
+    return std::nullopt;
+  }
+
+  std::set<nodeId> visited;
+  std::optional<nodeId> destination;
+  std::queue<nodeId> queue;
+  queue.push(*from);
+
+  while (!destination.has_value() && !queue.empty()) {
+    auto node_id = queue.front();
+    queue.pop();
+
+    if (visited.count(node_id)) {
+      continue;
+    }
+
+    auto outgoing_arcs = g[node_id];
+    std::cout << "outgoing_arcs size=" << outgoing_arcs->size() << std::endl;
+    if (!outgoing_arcs.has_value()) {
+      continue;
+    }
+
+    for (auto const &arc_id : outgoing_arcs.value()) {
+      auto to_node = g.arc(arc_id).to();
+
+      auto const &node = g.node(to_node);
+      auto const &facilities = node.data()->facilities();
+      std::cout << "facilities size=" << facilities.size() << std::endl;
+      for (auto f : facilities) {
+        std::cout << "f=" << static_cast<int>(f) << " ";
+      }
+      std::cout << std::endl;
+      auto found =
+          std::any_of(facilities.begin(), facilities.end(), [=](auto facility) {
+            return facility == static_cast<Facility>(requested_facility);
+          });
+
+      std::cout << "found=" << (int)found << std::endl;
+
+      if (found) {
+        destination = to_node;
+        break;
+      }
+      visited.insert(node_id);
+      queue.push(to_node);
+    }
+  }
+  return destination;
 }
 
 std::optional<nodeId> Dijkstra::find_closed_node(Graph const &g, double lat,

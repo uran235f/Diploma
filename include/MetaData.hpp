@@ -9,28 +9,16 @@
 #include <string>
 
 enum class Facility {
-  Cardiology,
+  Pharmacy,
   Emergency,
-  General,
-  Gynaecology,
-  Orthopaedics,
-  Paediatrics,
-  Stomatology,
-  Trauma,
-  Community,
-  Radiology,
-  Transplant,
-  Urology,
   Hospital,
-  Birthing_centre,
-  Centre,
+  Trauma,
   Clinic,
   Dentist,
-  Doctor,
-  Laboratory,
-  Pharmacy,
-  Psychiatry,
-  Orthodontics
+  Gynaecology,
+  Urology,
+  Birthing_centre,
+  General
 };
 
 class MetaData {
@@ -66,6 +54,7 @@ public:
   std::string const &name() const { return name_; }
   std::string const &address() const { return address_; }
   std::set<Facility> const &facilities() const { return facilities_; }
+  void addFacility(Facility facility) { facilities_.insert(facility); }
 
   template <class Archive>
   void save(Archive &ar, const unsigned int version) const;

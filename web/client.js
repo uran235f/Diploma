@@ -34,11 +34,11 @@ async function sendRequest() {
     const data = {
         latitude: clickedLat,
         longitude: clickedLng,
-        medicalFacility: facilityType,
-        routeType: transportType
+        medicalFacility: parseInt(facilityType),
+        routeType: parseInt(transportType)
     };
 
-    console.log("data " + data.routeType);
+    console.log("data " + data.medicalFacility);
 
     try {
         const response = await fetch(url, {

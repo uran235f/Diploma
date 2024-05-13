@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zalupa</title>
+    <title>Route Optimizer</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
@@ -12,17 +12,17 @@
 <body>
     <div class="button-container">
         <div class="button-container-2">
-            <a onclick="setType('Автомобіль');" href="map.html">
+            <a onclick="setType(2);" href="map.html">
                 <button class="button">Автомобіль</button>
             </a>
         </div>
         <div class="button-container-2">
-            <a onclick="setType('Громадський транспорт');" href="map.html">
+            <a onclick="setType(1);" href="map.html">
                 <button class="button">Громадський транспорт</button>
             </a>
         </div>
         <div class="button-container-2">
-            <a onclick="setType('Пішки');" href="map.html">
+            <a onclick="setType(3);" href="map.html">
                 <button class="button">Пішки</button>
             </a>
         </div>
@@ -30,7 +30,7 @@
             <a href="index.html"><button class="button button-2">Повернутись</button></a>
         </div>
     </div>
-     
+
     <script>
         function setType(type) {
             localStorage.setItem('transportType', type);

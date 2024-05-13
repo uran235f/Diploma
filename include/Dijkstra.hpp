@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Graph.hpp"
+#include "Request.hpp"
 
 #include <memory>
 #include <nlohmann/json.hpp>
@@ -44,8 +45,7 @@ struct Item {
 
 class Dijkstra {
 public:
-  static std::string optimize(Graph const &g, std::size_t from, std::size_t to);
-
+  static std::string optimize(Graph const &g, Request const &request);
   static std::optional<nodeId> find_closed_node(Graph const &g, double lat,
                                                 double lon);
 
@@ -54,6 +54,7 @@ private:
                                           std::size_t start);
   static void add_additional_fields(nlohmann::json &to, double dist);
   static nlohmann::json reduce_result(nlohmann::json &modifiable);
-
-  static void bfs_search(Graph const &g);
+  static std::optional<nodeId> bfs(Graph const &g,
+                                   std::optional<nodeId> const &from,
+                                   int requested_facility);
 };

@@ -11,18 +11,21 @@ void Graph::build_master_graph() noexcept {
 }
 
 std::optional<Arcs> Graph::operator[](nodeId id) const noexcept {
+   std::cout << "find " << id << std::endl;
   auto arcs = adjacency_list_.find(id);
   if (arcs != adjacency_list_.end()) {
-    for (auto arc : arcs->second) {
-    }
+        std::cout << "found " << id << std::endl;
     return arcs->second;
   }
   return std::nullopt;
 }
 
 Node const &Graph::node(nodeId id) const {
+ 
   auto node = nodes_.find(id);
+  
   if (node != nodes_.end()) {
+
     return node->second;
   }
   throw std::runtime_error("Unknown node id in graph: " + std::to_string(id));

@@ -46,7 +46,7 @@ int main() {
       json status;
       status["status"] = "Request is empty";
       result_json.push_back(status);
-      auto response = Response::withPayload(result_json, request);
+      auto response = Response::withJson(result_json, request);
       http::write(socket, response);
       continue;
     }
@@ -63,17 +63,17 @@ int main() {
       json status;
       status["status"] = "Closest node not found. Graph is empty";
       result_json.push_back(status);
-      auto response = Response::withPayload(result_json, request);
+      auto response = Response::withJson(result_json, request);
       http::write(socket, response);
       continue;
     }
 
     std::cout << "closest=" << *closest << std::endl;
-    result_json = Dijkstra::optimize(graph, *closest, 1654330486);
+    result_json = Dijkstra::optimize(graph, parsedRequest);
     std::cout << result_json << std::endl;
 
     // Відправлення відповіді клієнту
-    auto response = Response::withPayload(result_json, request);
+    auto response = Response::withString(result_json, request);
     http::write(socket, response);
   }
 
