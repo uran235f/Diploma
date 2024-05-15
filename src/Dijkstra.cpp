@@ -2,8 +2,10 @@
 #include "Heap.hpp"
 
 #include <algorithm>
+#include <boost/algorithm/string.hpp>
 #include <map>
 #include <queue>
+#include <ranges>
 
 using json = nlohmann::json;
 
@@ -58,66 +60,73 @@ std::string Dijkstra::optimize(Graph const &g, Request const &request) {
 
     for (auto arc_id : arcs.value()) {
       auto const &arc = g.arc(arc_id);
+      auto const &transport = g.arc(arc_id).transportData()->transport();
+      auto requestedType = request.getRouteType();
+      auto selected = select_transport(transport, requestedType);
 
-      if (arc.to() == destination_node) {
-        result =
-            Item{arc.to(), arc_id, *arc.transportData()->transport().begin(),
-                 std::make_shared<Item>(item), arc.distance() + item.distance};
-        reached_dest = true;
-        break;
-      }
+      print_transport("All transports: ", transport);
+      print_transport("Selected transport: ", selected);
 
-      auto it = visited.find(arc.to());
-      if (it == visited.end()) {
-        Item new_item =
-            Item{arc.to(), arc_id, *arc.transportData()->transport().begin(),
-                 std::make_shared<Item>(item), arc.distance() + item.distance};
+      for (auto transport_type : selected) {
+        if (arc.to() == destination_node) {
+          result = Item{arc.to(), arc_id, transport_type,
+                        std::make_shared<Item>(item),
+                        arc.distance() + item.distance};
+          goto found_solution;
+        }
 
-        std::cout << "[CURR] " << item << std::endl;
-        std::cout << "[NEW ITEM] " << new_item << std::endl;
+        auto it = visited.find(arc.to());
+        if (it == visited.end()) {
+          Item new_item = Item{arc.to(), arc_id, transport_type,
+                               std::make_shared<Item>(item),
+                               arc.distance() + item.distance};
 
-        std::cout << "Not visited: to_id=" << arc.to() << " via arc=" << arc_id
-                  << " cost=" << new_item.distance << std::endl
-                  << std::endl;
+          std::cout << "[CURR] " << item << std::endl;
+          std::cout << "[NEW ITEM] " << new_item << std::endl;
 
-        visited[arc.to()] = new_item;
-        queue.push(new_item);
-      } else {
+          std::cout << "Not visited: to_id=" << arc.to()
+                    << " via arc=" << arc_id << " cost=" << new_item.distance
+                    << std::endl
+                    << std::endl;
 
-        auto new_dist = arc.distance() + item.distance;
-
-        std::cout << "[VISITED][CURR] " << item << std::endl;
-
-        if (new_dist < it->second.distance) {
-
-          auto to_update = queue.find(it->second);
-          to_update->distance = new_dist;
-          to_update->parent = item.parent;
-          to_update->parent_arc = arc_id;
-          to_update->transport = *arc.transportData()->transport().begin();
-
-          it->second.distance = new_dist;
-          it->second.parent = item.parent;
-          it->second.parent_arc = arc_id;
-          it->second.transport = *arc.transportData()->transport().begin();
-
-          std::cout << "[UPDATE] to_id=" << arc.to() << " via arc=" << arc_id
-                    << " cost=" << it->second.distance << std::endl;
-          std::cout << "[ITEM] " << item << std::endl;
-
-          queue.update();
-
+          visited[arc.to()] = new_item;
+          queue.push(new_item);
         } else {
-          std::cout << "[EXPENSIVE] to_id=" << arc.to() << " via arc=" << arc_id
-                    << " cost=" << it->second.distance << std::endl;
+
+          auto new_dist = arc.distance() + item.distance;
+
+          std::cout << "[VISITED][CURR] " << item << std::endl;
+
+          if (new_dist < it->second.distance) {
+
+            auto to_update = queue.find(it->second);
+            to_update->distance = new_dist;
+            to_update->parent = item.parent;
+            to_update->parent_arc = arc_id;
+            to_update->transport = transport_type;
+
+            it->second.distance = new_dist;
+            it->second.parent = item.parent;
+            it->second.parent_arc = arc_id;
+            it->second.transport = transport_type;
+
+            std::cout << "[UPDATE] to_id=" << arc.to() << " via arc=" << arc_id
+                      << " cost=" << it->second.distance << std::endl;
+            std::cout << "[ITEM] " << item << std::endl;
+
+            queue.update();
+
+          } else {
+            std::cout << "[EXPENSIVE] to_id=" << arc.to()
+                      << " via arc=" << arc_id
+                      << " cost=" << it->second.distance << std::endl;
+          }
         }
       }
     }
-
-    if (reached_dest) {
-      break;
-    }
   }
+
+found_solution:
 
   std::string json_result = "";
 
@@ -137,6 +146,16 @@ std::string Dijkstra::optimize(Graph const &g, Request const &request) {
 
   std::cout << "No path to dest=" << destination_node << std::endl;
   return "";
+}
+
+template <typename Containter>
+void Dijkstra::print_transport(std::string const &prepend,
+                               Containter const &container) {
+  std::cout << prepend;
+  for (auto type : container) {
+    std::cout << static_cast<int>(type) << " ";
+  }
+  std::cout << std::endl;
 }
 
 std::optional<nodeId> Dijkstra::bfs(Graph const &g,
@@ -191,6 +210,30 @@ std::optional<nodeId> Dijkstra::bfs(Graph const &g,
     }
   }
   return destination;
+}
+
+std::vector<TransportType>
+Dijkstra::select_transport(std::set<TransportType> const &transport,
+                           RequestedTransport requestedType) {
+  std::vector<TransportType> selected;
+
+  std::ranges::copy_if(transport, std::back_inserter(selected), [&](auto type) {
+
+    std::cout << "requestedType == RequestedTransport::PUBLIC -> " << (requestedType == RequestedTransport::PUBLIC) << std::endl;
+    std::cout << "requestedType == RequestedTransport::CAR -> " << (requestedType == RequestedTransport::CAR) << std::endl;
+    std::cout << "type == TransportType::subway -> " << (type == TransportType::subway) << std::endl;
+    std::cout << "type == TransportType::bus -> " << (type == TransportType::bus) << std::endl;
+    std::cout << "type == TransportType::car -> " << (type == TransportType::car) << std::endl;
+    std::cout << "type == TransportType::pedestrian -> " << (type == TransportType::pedestrian) << std::endl;
+
+
+    return ((requestedType == RequestedTransport::PUBLIC) &&
+            (type == TransportType::subway || type == TransportType::bus)) ||
+           (requestedType == RequestedTransport::CAR &&
+            type == TransportType::car) ||
+           (type == TransportType::pedestrian);
+  });
+  return selected;
 }
 
 std::optional<nodeId> Dijkstra::find_closed_node(Graph const &g, double lat,

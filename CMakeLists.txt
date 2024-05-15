@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.22)
 project(optimizer)
 list(APPEND CMAKE_PREFIX_PATH "/usr/share/doc/libpqxx")
 
-set(CXX_STANDARD_REQUIRED 17)
+set(CXX_STANDARD_REQUIRED 20)
 set(CXX_STANDARD_REQUIRED TRUE)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 message("Compiler: ${CMAKE_C_COMPILER}")
 message("Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")

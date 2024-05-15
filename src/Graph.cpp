@@ -21,11 +21,8 @@ std::optional<Arcs> Graph::operator[](nodeId id) const noexcept {
 }
 
 Node const &Graph::node(nodeId id) const {
- 
   auto node = nodes_.find(id);
-  
   if (node != nodes_.end()) {
-
     return node->second;
   }
   throw std::runtime_error("Unknown node id in graph: " + std::to_string(id));

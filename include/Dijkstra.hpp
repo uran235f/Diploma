@@ -57,4 +57,11 @@ private:
   static std::optional<nodeId> bfs(Graph const &g,
                                    std::optional<nodeId> const &from,
                                    int requested_facility);
+  static std::vector<TransportType>
+  select_transport(std::set<TransportType> const &transport,
+                   RequestedTransport requestedType);
+
+  template <typename Containter>
+  static void print_transport(std::string const &prepend,
+                              Containter const &container);
 };
