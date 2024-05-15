@@ -9,11 +9,26 @@
 #include <string>
 
 struct Item {
+  enum class Speeds { SUBWAY = 80, BUS = 40, CAR = 45, PERDESTRIAN = 5 };
+
   std::size_t node_id;
   std::optional<std::size_t> parent_arc;
-  std::optional<TransportType> transport;
   std::shared_ptr<Item> parent;
+  TransportType transport;
   double distance;
+  double time;
+
+  Item() = default;
+  Item(Item const &) = default;
+  Item(Item &&) = default;
+  Item &operator=(Item const &) = default;
+  Item &operator=(Item &&) = default;
+  Item(std::size_t node_id, std::optional<std::size_t> const &parent_arc,
+       TransportType transport, std::shared_ptr<Item> parent, double distance)
+      : node_id(node_id), parent_arc(parent_arc), transport(transport),
+        parent(parent), distance(distance) {
+    time = distance * 3600 / (covertTransportTypeToSpeed(transport) * 1000);
+  }
 
   bool operator>(Item const &rhs) const {
     return this->distance > rhs.distance;
@@ -33,13 +48,14 @@ struct Item {
     oss << "Item: node " << item.node_id;
     if (item.parent_arc) {
       oss << " via " << *item.parent_arc << "["
-          << static_cast<int>(*item.transport) << "]";
+          << static_cast<int>(item.transport) << "]";
     } else {
       oss << " via none";
     }
     return os << oss.str();
   }
 
+  double covertTransportTypeToSpeed(TransportType transport);
   static void print_chain(Item const &item, Graph const &g);
 };
 

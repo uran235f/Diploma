@@ -37,7 +37,8 @@ std::string Dijkstra::optimize(Graph const &g, Request const &request) {
   }
 
   std::size_t destination_node = *destination_node_opt;
-  auto start = Item{depature_node, std::nullopt, std::nullopt, nullptr, 0};
+  auto start = Item{depature_node, std::nullopt, TransportType::pedestrian,
+                    nullptr, 0.0};
 
   bool reached_dest = false;
   std::optional<Item> result;
@@ -218,15 +219,6 @@ Dijkstra::select_transport(std::set<TransportType> const &transport,
   std::vector<TransportType> selected;
 
   std::ranges::copy_if(transport, std::back_inserter(selected), [&](auto type) {
-
-    std::cout << "requestedType == RequestedTransport::PUBLIC -> " << (requestedType == RequestedTransport::PUBLIC) << std::endl;
-    std::cout << "requestedType == RequestedTransport::CAR -> " << (requestedType == RequestedTransport::CAR) << std::endl;
-    std::cout << "type == TransportType::subway -> " << (type == TransportType::subway) << std::endl;
-    std::cout << "type == TransportType::bus -> " << (type == TransportType::bus) << std::endl;
-    std::cout << "type == TransportType::car -> " << (type == TransportType::car) << std::endl;
-    std::cout << "type == TransportType::pedestrian -> " << (type == TransportType::pedestrian) << std::endl;
-
-
     return ((requestedType == RequestedTransport::PUBLIC) &&
             (type == TransportType::subway || type == TransportType::bus)) ||
            (requestedType == RequestedTransport::CAR &&
@@ -276,7 +268,7 @@ std::string Dijkstra::generate_json_result(Item const &item, Graph const &g,
   for (Item const *it = &item; it != nullptr; it = it->parent.get()) {
     if (it->parent_arc) {
       auto node_json = make_node_json(g.node(it->node_id));
-      add_arc_json(node_json, it->transport.value(),
+      add_arc_json(node_json, it->transport,
                    g.arc(*it->parent_arc).transportData()->name());
       result.push_back(node_json);
     }
@@ -333,7 +325,23 @@ void Item::print_chain(Item const &item, Graph const &g) {
       std::cout << "[DEBUG] from [" << arc.from() << "] -> "
                 << "via {" << arc.arc() << "} -> "
                 << "to [" << arc.to() << "] with distance " << it->distance
-                << std::endl;
+                << " time " << it->time << std::endl;
     }
+  }
+}
+
+double Item::covertTransportTypeToSpeed(TransportType transport) {
+  switch (transport) {
+  case TransportType::subway:
+    return static_cast<double>(Item::Speeds::SUBWAY);
+  case TransportType::bus:
+    return static_cast<double>(Item::Speeds::BUS);
+  case TransportType::car:
+    return static_cast<double>(Item::Speeds::CAR);
+  case TransportType::pedestrian:
+    return static_cast<double>(Item::Speeds::PERDESTRIAN);
+  default:
+    break;
+    throw "Unknown transport type";
   }
 }
