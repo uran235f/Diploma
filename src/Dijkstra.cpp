@@ -45,6 +45,10 @@ std::string Dijkstra::optimize(Graph const &g, Request const &request) {
 
   queue.push(start);
 
+  auto speed_comparator = [&](auto lhs, auto rhs) {
+    return Item::transportToSpeed(lhs) < Item::transportToSpeed(rhs);
+  };
+
   std::cout << "Dijkstra optimization configured." << std::endl;
 
   while (!queue.empty()) {
@@ -68,60 +72,66 @@ std::string Dijkstra::optimize(Graph const &g, Request const &request) {
       print_transport("All transports: ", transport);
       print_transport("Selected transport: ", selected);
 
-      for (auto transport_type : selected) {
-        if (arc.to() == destination_node) {
-          result = Item{arc.to(), arc_id, transport_type,
-                        std::make_shared<Item>(item),
-                        arc.distance() + item.distance};
-          goto found_solution;
-        }
+      auto fastest_transport =
+          std::ranges::max_element(selected, speed_comparator);
+      auto highest_speed = Item::transportToSpeed(*fastest_transport);
 
-        auto it = visited.find(arc.to());
-        if (it == visited.end()) {
-          Item new_item = Item{arc.to(), arc_id, transport_type,
-                               std::make_shared<Item>(item),
-                               arc.distance() + item.distance};
+      std::cout << "fasters transport=" << static_cast<int>(*fastest_transport)
+                << " speed=" << highest_speed << std::endl;
 
-          std::cout << "[CURR] " << item << std::endl;
-          std::cout << "[NEW ITEM] " << new_item << std::endl;
+      if (arc.to() == destination_node) {
+        result =
+            Item{arc.to(), arc_id, *fastest_transport,
+                 std::make_shared<Item>(item), arc.distance() + item.distance};
+        goto found_solution;
+      }
 
-          std::cout << "Not visited: to_id=" << arc.to()
-                    << " via arc=" << arc_id << " cost=" << new_item.distance
-                    << std::endl
-                    << std::endl;
+      auto it = visited.find(arc.to());
+      if (it == visited.end()) {
+        Item new_item =
+            Item{arc.to(), arc_id, *fastest_transport,
+                 std::make_shared<Item>(item), arc.distance() + item.distance};
 
-          visited[arc.to()] = new_item;
-          queue.push(new_item);
+        std::cout << "[CURR] " << item << std::endl;
+        std::cout << "[NEW ITEM] " << new_item << std::endl;
+
+        std::cout << "Not visited: to_id=" << arc.to() << " via arc=" << arc_id
+                  << " cost=" << new_item.distance << std::endl
+                  << std::endl;
+
+        visited[arc.to()] = new_item;
+        queue.push(new_item);
+      } else {
+
+        auto new_dist = arc.distance() + item.distance;
+        auto new_time = new_dist * 3600 / (highest_speed * 1000);
+
+        std::cout << "[VISITED][CURR] " << item << std::endl;
+
+        if (new_time < it->second.time) {
+
+          auto to_update = queue.find(it->second);
+          to_update->distance = new_dist;
+          to_update->parent = item.parent;
+          to_update->parent_arc = arc_id;
+          to_update->transport = *fastest_transport;
+          to_update->time = new_time;
+
+          it->second.distance = new_dist;
+          it->second.time = new_time;
+          it->second.parent = item.parent;
+          it->second.parent_arc = arc_id;
+          it->second.transport = *fastest_transport;
+
+          std::cout << "[UPDATE] to_id=" << arc.to() << " via arc=" << arc_id
+                    << " cost=" << it->second.distance << std::endl;
+          std::cout << "[ITEM] " << item << std::endl;
+
+          queue.update();
+
         } else {
-
-          auto new_dist = arc.distance() + item.distance;
-
-          std::cout << "[VISITED][CURR] " << item << std::endl;
-
-          if (new_dist < it->second.distance) {
-
-            auto to_update = queue.find(it->second);
-            to_update->distance = new_dist;
-            to_update->parent = item.parent;
-            to_update->parent_arc = arc_id;
-            to_update->transport = transport_type;
-
-            it->second.distance = new_dist;
-            it->second.parent = item.parent;
-            it->second.parent_arc = arc_id;
-            it->second.transport = transport_type;
-
-            std::cout << "[UPDATE] to_id=" << arc.to() << " via arc=" << arc_id
-                      << " cost=" << it->second.distance << std::endl;
-            std::cout << "[ITEM] " << item << std::endl;
-
-            queue.update();
-
-          } else {
-            std::cout << "[EXPENSIVE] to_id=" << arc.to()
-                      << " via arc=" << arc_id
-                      << " cost=" << it->second.distance << std::endl;
-          }
+          std::cout << "[EXPENSIVE] to_id=" << arc.to() << " via arc=" << arc_id
+                    << " cost=" << it->second.distance << std::endl;
         }
       }
     }
@@ -330,7 +340,7 @@ void Item::print_chain(Item const &item, Graph const &g) {
   }
 }
 
-double Item::covertTransportTypeToSpeed(TransportType transport) {
+double Item::transportToSpeed(TransportType transport) {
   switch (transport) {
   case TransportType::subway:
     return static_cast<double>(Item::Speeds::SUBWAY);

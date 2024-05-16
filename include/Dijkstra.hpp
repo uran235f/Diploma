@@ -27,16 +27,11 @@ struct Item {
        TransportType transport, std::shared_ptr<Item> parent, double distance)
       : node_id(node_id), parent_arc(parent_arc), transport(transport),
         parent(parent), distance(distance) {
-    time = distance * 3600 / (covertTransportTypeToSpeed(transport) * 1000);
+    time = distance * 3600 / (transportToSpeed(transport) * 1000);
   }
 
-  bool operator>(Item const &rhs) const {
-    return this->distance > rhs.distance;
-  }
-
-  bool operator<(Item const &rhs) const {
-    return this->distance < rhs.distance;
-  }
+  bool operator>(Item const &rhs) const { return this->time > rhs.time; }
+  bool operator<(Item const &rhs) const { return this->time < rhs.time; }
 
   bool operator==(Item const &rhs) const {
     return this->node_id == rhs.node_id && this->parent_arc.value() &&
@@ -55,7 +50,7 @@ struct Item {
     return os << oss.str();
   }
 
-  double covertTransportTypeToSpeed(TransportType transport);
+  static double transportToSpeed(TransportType transport);
   static void print_chain(Item const &item, Graph const &g);
 };
 
