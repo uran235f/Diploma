@@ -38,7 +38,7 @@ std::string Dijkstra::optimize(Graph const &g, Request const &request) {
 
   std::size_t destination_node = *destination_node_opt;
   auto start = Item{depature_node, std::nullopt, TransportType::pedestrian,
-                    nullptr, 0.0};
+                    nullptr,       0.0,          0.0};
 
   std::optional<Item> result;
   queue.push(start);
@@ -70,6 +70,10 @@ std::string Dijkstra::optimize(Graph const &g, Request const &request) {
       print_transport("All transports: ", transport);
       print_transport("Selected transport: ", selected);
 
+      if (selected.empty()) {
+        continue;
+      }
+
       auto fastest_transport =
           std::ranges::max_element(selected, speed_comparator);
       auto highest_speed = Item::transportToSpeed(*fastest_transport);
@@ -78,17 +82,27 @@ std::string Dijkstra::optimize(Graph const &g, Request const &request) {
                 << " speed=" << highest_speed << std::endl;
 
       if (arc.to() == destination_node) {
-        result =
-            Item{arc.to(), arc_id, *fastest_transport,
-                 std::make_shared<Item>(item), arc.distance() + item.distance};
+        auto time_arc = arc.distance() * 3600 /
+                        (Item::transportToSpeed(*fastest_transport) * 1000);
+        auto new_time = item.time + time_arc;
+        auto new_dist = arc.distance() + item.distance;
+        result = Item{arc.to(),           arc_id,
+                      *fastest_transport, std::make_shared<Item>(item),
+                      new_dist,           new_time};
         goto found_solution;
       }
 
       auto it = visited.find(arc.to());
       if (it == visited.end()) {
-        Item new_item =
-            Item{arc.to(), arc_id, *fastest_transport,
-                 std::make_shared<Item>(item), arc.distance() + item.distance};
+        auto time_arc = arc.distance() * 3600 /
+                        (Item::transportToSpeed(*fastest_transport) * 1000);
+        auto new_time = item.time + time_arc;
+        Item new_item = Item{arc.to(),
+                             arc_id,
+                             *fastest_transport,
+                             std::make_shared<Item>(item),
+                             arc.distance() + item.distance,
+                             new_time};
 
         std::cout << "[CURR] " << item << std::endl;
         std::cout << "[NEW ITEM] " << new_item << std::endl;
@@ -101,8 +115,10 @@ std::string Dijkstra::optimize(Graph const &g, Request const &request) {
         queue.push(new_item);
       } else {
 
+        auto time_arc = arc.distance() * 3600 /
+                        (Item::transportToSpeed(*fastest_transport) * 1000);
+        auto new_time = item.time + time_arc;
         auto new_dist = arc.distance() + item.distance;
-        auto new_time = new_dist * 3600 / (highest_speed * 1000);
 
         std::cout << "[VISITED][CURR] " << item << std::endl;
 

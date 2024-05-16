@@ -24,11 +24,10 @@ struct Item {
   Item &operator=(Item const &) = default;
   Item &operator=(Item &&) = default;
   Item(std::size_t node_id, std::optional<std::size_t> const &parent_arc,
-       TransportType transport, std::shared_ptr<Item> parent, double distance)
+       TransportType transport, std::shared_ptr<Item> parent, double distance,
+       double time)
       : node_id(node_id), parent_arc(parent_arc), transport(transport),
-        parent(parent), distance(distance) {
-    time = distance * 3600 / (transportToSpeed(transport) * 1000);
-  }
+        parent(parent), distance(distance), time(time) {}
 
   bool operator>(Item const &rhs) const { return this->time > rhs.time; }
   bool operator<(Item const &rhs) const { return this->time < rhs.time; }
@@ -43,10 +42,11 @@ struct Item {
     oss << "Item: node " << item.node_id;
     if (item.parent_arc) {
       oss << " via " << *item.parent_arc << "["
-          << static_cast<int>(item.transport) << "]";
+          << static_cast<int>(item.transport) << "] ";
     } else {
-      oss << " via none";
+      oss << " via none ";
     }
+    oss << " distance=" << item.distance << " time=" << item.time;
     return os << oss.str();
   }
 
