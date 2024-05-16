@@ -64,7 +64,6 @@ private:
   static std::string generate_json_result(Item const &item, Graph const &g,
                                           std::size_t start);
   static void add_additional_fields(nlohmann::json &to, double dist);
-  static nlohmann::json reduce_result(nlohmann::json &modifiable);
   static std::optional<nodeId> bfs(Graph const &g,
                                    std::optional<nodeId> const &from,
                                    int requested_facility);

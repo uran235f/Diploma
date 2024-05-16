@@ -40,9 +40,7 @@ std::string Dijkstra::optimize(Graph const &g, Request const &request) {
   auto start = Item{depature_node, std::nullopt, TransportType::pedestrian,
                     nullptr, 0.0};
 
-  bool reached_dest = false;
   std::optional<Item> result;
-
   queue.push(start);
 
   auto speed_comparator = [&](auto lhs, auto rhs) {
@@ -140,8 +138,6 @@ std::string Dijkstra::optimize(Graph const &g, Request const &request) {
 found_solution:
 
   std::string json_result = "";
-
-  // g.node(1654330486).data()->addFacility(static_cast<Facility>(0));
 
   if (result) {
     std::cout << "Shortest dist=" << result->distance << std::endl;
@@ -287,12 +283,6 @@ std::string Dijkstra::generate_json_result(Item const &item, Graph const &g,
   make_node_json(g.node(start));
   std::reverse(result.begin(), result.end());
 
-  // if (result.size() > 25) {
-  //   auto new_result = reduce_result(result);
-  //   add_json_distance(new_result, item.distance);
-  //   return to_string(new_result);
-  // }
-
   add_additional_fields(result, item.distance);
   return to_string(result);
 }
@@ -301,31 +291,6 @@ void Dijkstra::add_additional_fields(json &to, double dist) {
   json distance;
   distance["distance"] = std::to_string(dist);
   to.push_back(distance);
-}
-
-json Dijkstra::reduce_result(json &modifiable) {
-  std::cout << "modifiable size=" << modifiable.size() << std::endl;
-
-  std::size_t index = (modifiable.size() - 2) / 23;
-  std::cout << "index=" << index << std::endl;
-
-  char letter = 'A';
-
-  json rv;
-  rv.push_back(modifiable.front());
-  rv.back()["ASTANA"] = static_cast<char>(letter);
-  ++letter;
-
-  auto it = modifiable.begin() + index;
-  for (auto i = 0; i != 23; ++i, it += index) {
-    rv.push_back(*it);
-    rv.back()["ASTANA"] = static_cast<char>(letter);
-    ++letter;
-  }
-  rv.push_back(modifiable.back());
-  rv.back()["ASTANA"] = static_cast<char>(letter);
-
-  return rv;
 }
 
 void Item::print_chain(Item const &item, Graph const &g) {
