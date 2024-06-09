@@ -61,14 +61,17 @@
 
 7. **Fill the parsed data into the database (Заповніть базу даних отриманими даними)**
 
-8. . **Connect the database to the C++ program (Підключити базу даних до програми на C++)**
+8. **Connect Google Maps API to the third page (Підключіть Google Maps API до третьої сторінки)**:
+   Використовуйте цей [мануал](https://developers.google.com/maps/documentation/javascript/adding-a-google-map) для підключення Google Maps API до третьої сторінки.
 
-> I use PostgreSQL and the `libpqxx` library. If you want to use another DBMS, install the respective library and modify the database creation script accordingly. (Я використовую PostgreSQL і бібліотеку `libpqxx`. Якщо ви хочете використовувати іншу СУБД, встановіть відповідну бібліотеку і змініть скрипт створення бази даних.)
+9. **Connect the database to the C++ program (Підключити базу даних до програми на C++)**
+
+    > I use PostgreSQL and the `libpqxx` library. If you want to use another DBMS, install the respective library and modify the database creation script accordingly. (Я використовую PostgreSQL і бібліотеку `libpqxx`. Якщо ви хочете використовувати іншу СУБД, встановіть відповідну бібліотеку і змініть скрипт створення бази даних.)
 
 10. **Run the program (Запустити програму)** using the command:
     ```bash
     ./run.sh
     ```
-> Run this command in the directory where the cloned project is located. (Запустіть цю команду в директорії, в якій знаходиться клонований проект.)
+    > Run this command in the directory where the cloned project is located. (Запустіть цю команду в директорії, в якій знаходиться клонований проект.)
 
-10. **Open the web page `index.html` (Відкрити веб-сторінку `index.html`)**
+11. **Open the web page `index.html` (Відкрити веб-сторінку `index.html`)**
